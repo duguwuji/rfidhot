@@ -916,6 +916,76 @@
       "site_fulltext": false,
       "syndicate_fulltext": false,
       "enabled": true
+    },
+    {
+      "id": "web-gs1-us-press",
+      "name": "GS1 US EPC／EPCIS 与标准动态",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.gs1us.org/industries-and-insights/media-center/press-releases",
+        "itemSelector": ".cmp-list__item:has(.cmp-list__item-description:contains(\"-\"))",
+        "linkSelector": ".cmp-list__item-link",
+        "titleSelector": ".cmp-list__item-title",
+        "publishedAtSelector": ".cmp-list__item-description",
+        "allowUrlPrefixes": [
+          "https://www.gs1us.org/industries-and-insights/media-center/press-releases/"
+        ],
+        "sortByPublishedAt": true,
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "publishedAtUtcOffset": "+00:00"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": "gs1",
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-openepcis-blog",
+      "name": "OpenEPCIS EPCIS 技术博客",
+      "kind": "web_list",
+      "config": {
+        "url": "https://openepcis.io/blog/",
+        "itemSelector": "main li:has(a[href^=\"/blog/\"] h2)",
+        "linkSelector": "a[href^=\"/blog/\"]",
+        "titleSelector": "h2",
+        "publishedAtSelector": "time",
+        "allowUrlPrefixes": [
+          "https://openepcis.io/blog/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "publishedAtSelector": "time",
+          "publishedAtUtcOffset": "+00:00"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
     }
   ]
 }
