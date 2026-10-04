@@ -36,6 +36,16 @@ test("Avery cards retain the headline and date rather than Read more", () => {
   assert.equal(rows[0]!.publishedAt?.toISOString(), "2026-09-15T00:00:00.000Z");
 });
 
+test("Avery datelines support older separators and date order without inventing a missing day", () => {
+  const s = source("web-avery-rfid");
+  const card = (n: number, dateline: string) => `<div class="text parbase"><h5>RFID announcement ${n}</h5><p>${dateline} — Company announcement.</p><div class="cta"><a href="/en/home/news-insights/press-releases/post-${n}.html">read</a></div></div>`;
+  const dates = ["MENTOR, OH —&nbsp; March 2, 2020", "GLENDALE, CA – March 2, 2020", "GLENDALE, CA, March 2, 2020", "GLENDALE, CA – 2 March 2020"];
+  const rows = fromHtml(dates.map((d, n) => card(n, d)).join("") + card(4, "SAO PAULO, Brazil, January 2020"), s.config.url, s);
+  assert.equal(rows.length, 5);
+  assert.ok(rows.slice(0, 4).every((r) => r.publishedAt?.toISOString() === "2020-03-02T00:00:00.000Z"));
+  assert.equal(rows[4]!.publishedAt, null);
+});
+
 test("Impinj blog cards retain source dates beyond the detail budget and exclude the undated spotlight", () => {
   const s = source("web-impinj-blog");
   const card = (n: number) => `<a class="feature-destination" href="/library/blog/post-${n}"><h5 class="feature-heading">RFID technical post ${n}</h5><p class="feature-copy">Card summary mentioning a different date, 2026.</p><small class="feature-meta">15 Jul 2025</small></a>`;

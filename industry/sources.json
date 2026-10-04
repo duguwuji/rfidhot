@@ -100,7 +100,7 @@
           "from": "https://rfid.averydennison.com/content/rfid/na/",
           "to": "https://rfid.averydennison.com/"
         },
-        "publishedAtRegex": "(?:—|&mdash;)\\s*([A-Za-z]+\\s+\\d{1,2},\\s+\\d{4})",
+        "publishedAtRegex": "((?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},?\\s+\\d{4}|\\d{1,2}\\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{4})",
         "publishedAtUtcOffset": "+00:00"
       },
       "tier": "T1",
