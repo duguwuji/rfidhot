@@ -50,6 +50,22 @@
 
 HID RFID 技术博客暂缓接入：本机 RSS 为 HTTP 200，Google Cloud 部署环境为 HTTP 403；未绕过访问限制，也未加入默认信源。
 
+## 2026-10-04 DPP 新增信源
+
+经运营者确认，补充以下五个数字产品护照（DPP）相关来源。2026-10-04 北京时间 23:34 使用 Google Cloud 部署环境的实际 RSS / HTML 做只读预览，每源核对三篇样本的标题、文章链接和发布日期；下表是当时的列表候选数，不代表最终入选数或未来可用性保证。预览未写入运营数据或调用模型。
+
+| 入口 | 列表候选数 | 解析与注意事项 |
+|---|---:|---|
+| [欧盟委员会 DPP 官方动态](https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en) | 4 | 只取 DPP 专题页新闻卡片，避开导航、指南和活动链接；列表 time 日期，详情 meta / JSON-LD 补充精度 |
+| [GS1 in Europe 标准与 DPP 资讯](https://gs1.eu/news/) | 10 | 新闻列表日期，详情标题读取页面实际 h2；包含其他商品身份标准话题，经过相关性预筛 |
+| [CIRPASS-2 DPP 项目动态](https://cirpass2.eu/latest-news/) | 6 | 新闻卡片与 time 日期；详情读取文章 h2 及 datePublished，避开通用页面标题；项目声明不视为监管结论 |
+| [BatteryPass-Ready 电池护照动态](https://thebatterypass.eu/feed/) | 10 | 官方 RSS 日期；覆盖电池护照数据、标准与技术验证 |
+| [Kezzler DPP 与追溯技术资讯](https://kezzler.com/learn/) | 13 | 文章卡片与 time 日期，详情 h1；包含其他追溯话题，经过相关性预筛；厂商声明保留来源归因 |
+
+五个来源默认启用，每 720 分钟采集一次，首次回填最多 8 篇；四个网页来源每轮详情请求上限 8 次。只展示摘要与原文链接，不新增付费采集服务，不调整主题、分类或评分门槛。DPP 不自动等于强制采用 RFID；标准组织、项目和厂商的观点按其实际来源表述。
+
+当前行业包共 27 个入口、24 个默认启用。现有站点更新后由 seed 仅新增缺少的来源，不覆盖已有后台编辑。GS1 全球文章入口仍保持停用，新增的 GS1 in Europe 为独立区域入口。CEN-CENELEC 暂缓接入，其检索页尚未稳定优先返回最新 DPP 动态，待专用入口或接口验证后再决定。
+
 ## 新站与已有站点
 
 新站按 [部署](deploy.md) 初始化环境，运行原始迁移与 `scripts/seed.ts`。站点地址由 `SITE_URL` 配置；模型由 `LLM_BASE_URL`、`LLM_API_KEY`、`LLM_MODEL` 配置。密钥不能入库或提交到 Git。

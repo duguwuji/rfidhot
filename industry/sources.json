@@ -740,6 +740,182 @@
       "site_fulltext": false,
       "syndicate_fulltext": false,
       "enabled": true
+    },
+    {
+      "id": "web-ec-dpp",
+      "name": "欧盟委员会 DPP 官方动态",
+      "kind": "web_list",
+      "config": {
+        "url": "https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en",
+        "itemSelector": ".ecl-content-item:has(a[href^=\"/news/\"])",
+        "linkSelector": ".ecl-content-block__title a",
+        "titleSelector": ".ecl-content-block__title",
+        "publishedAtSelector": "time",
+        "allowUrlPrefixes": [
+          "https://single-market-economy.ec.europa.eu/news/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "publishedAtUtcOffset": "+00:00",
+          "upgradeDatePrecision": true
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "DPP",
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-gs1-europe-news",
+      "name": "GS1 in Europe 标准与 DPP 资讯",
+      "kind": "web_list",
+      "config": {
+        "url": "https://gs1.eu/news/",
+        "itemSelector": ".news-item",
+        "linkSelector": "h3 a",
+        "titleSelector": "h3",
+        "publishedAtSelector": ".publish-date",
+        "publishedAtUtcOffset": "+00:00",
+        "allowUrlPrefixes": [
+          "https://gs1.eu/news/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": ".basic-header-title h2",
+          "publishedAtUtcOffset": "+00:00",
+          "upgradeDatePrecision": true
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": "gs1",
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "DPP",
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-cirpass2-news",
+      "name": "CIRPASS-2 DPP 项目动态",
+      "kind": "web_list",
+      "config": {
+        "url": "https://cirpass2.eu/latest-news/",
+        "itemSelector": ".e-loop-item",
+        "linkSelector": "h3 a",
+        "titleSelector": "h3",
+        "publishedAtSelector": "time",
+        "publishedAtUtcOffset": "+00:00",
+        "allowUrlPrefixes": [
+          "https://cirpass2.eu/"
+        ],
+        "denyUrlPrefixes": [
+          "https://cirpass2.eu/category/",
+          "https://cirpass2.eu/latest-news/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h2.elementor-heading-title",
+          "publishedAtUtcOffset": "+00:00",
+          "publishedAtSelector": "[itemprop=\"datePublished\"] time",
+          "publishedAtAuthoritative": true
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "DPP",
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-kezzler-insights",
+      "name": "Kezzler DPP 与追溯技术资讯",
+      "kind": "web_list",
+      "config": {
+        "url": "https://kezzler.com/learn/",
+        "itemSelector": ".kezzler-post-card__text",
+        "linkSelector": "h2 a",
+        "titleSelector": "h2",
+        "publishedAtSelector": "time",
+        "allowUrlPrefixes": [
+          "https://kezzler.com/"
+        ],
+        "denyUrlPrefixes": [
+          "https://kezzler.com/learn/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "publishedAtUtcOffset": "+00:00"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "DPP",
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-batterypass-news",
+      "name": "BatteryPass-Ready 电池护照动态",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://thebatterypass.eu/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "DPP",
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
     }
   ]
 }
