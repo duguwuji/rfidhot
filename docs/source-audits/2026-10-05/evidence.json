@@ -1,0 +1,757 @@
+{
+  "verified_at": "2026-10-04T20:20:01.952Z",
+  "environments": [
+    "local Node.js 24.19.0",
+    "Google Cloud rfidhot API container"
+  ],
+  "method": "只调用 guardedFetch / fetchRss / fetchWebList / fromHtml / fetchDetail；无 collectSource、数据库写入、模型或付费采集调用。",
+  "list_access": {
+    "local": [
+      {
+        "id": "gs1china",
+        "url": "https://www.gs1cn.org/",
+        "error": "TypeError: fetch failed"
+      },
+      {
+        "id": "auburn",
+        "url": "https://rfid.auburn.edu/news/",
+        "status": 200,
+        "responseUrl": "https://rfid.auburn.edu/news/"
+      },
+      {
+        "id": "hana",
+        "url": "https://hanarfid.com/news/",
+        "status": 200,
+        "responseUrl": "https://hanarfid.com/news/"
+      },
+      {
+        "id": "hid",
+        "url": "https://newsroom.hidglobal.com/press-releases",
+        "status": 200,
+        "responseUrl": "https://newsroom.hidglobal.com/press-releases"
+      },
+      {
+        "id": "schreiner",
+        "url": "https://forum.schreiner-group.com/en/tag/rfid-nfc/",
+        "status": 200,
+        "responseUrl": "https://forum.schreiner-group.com/en/tag/rfid-nfc-en/"
+      },
+      {
+        "id": "fda",
+        "url": "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods",
+        "status": 200,
+        "responseUrl": "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods"
+      },
+      {
+        "id": "mmh",
+        "url": "https://www.mmh.com/",
+        "status": 200,
+        "responseUrl": "https://www.mmh.com/"
+      },
+      {
+        "id": "scmr",
+        "url": "https://www.scmr.com/",
+        "status": 403,
+        "responseUrl": "https://www.scmr.com/"
+      },
+      {
+        "id": "arizon",
+        "url": "https://www.arizonrfid.com/blog",
+        "status": 200,
+        "responseUrl": "https://www.arizonrfid.com/blog"
+      }
+    ],
+    "server": [
+      {
+        "id": "gs1china",
+        "url": "https://www.gs1cn.org/",
+        "error": "TypeError: fetch failed"
+      },
+      {
+        "id": "auburn",
+        "url": "https://rfid.auburn.edu/news/",
+        "status": 200,
+        "responseUrl": "https://rfid.auburn.edu/news/"
+      },
+      {
+        "id": "hana",
+        "url": "https://hanarfid.com/news/",
+        "status": 200,
+        "responseUrl": "https://hanarfid.com/news/"
+      },
+      {
+        "id": "hid",
+        "url": "https://newsroom.hidglobal.com/press-releases",
+        "status": 403,
+        "responseUrl": "https://newsroom.hidglobal.com/press-releases"
+      },
+      {
+        "id": "schreiner",
+        "url": "https://forum.schreiner-group.com/en/tag/rfid-nfc/",
+        "status": 200,
+        "responseUrl": "https://forum.schreiner-group.com/en/tag/rfid-nfc-en/"
+      },
+      {
+        "id": "fda",
+        "url": "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods",
+        "status": 200,
+        "responseUrl": "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods"
+      },
+      {
+        "id": "mmh",
+        "url": "https://www.mmh.com/",
+        "status": 200,
+        "responseUrl": "https://www.mmh.com/"
+      },
+      {
+        "id": "scmr",
+        "url": "https://www.scmr.com/",
+        "status": 403,
+        "responseUrl": "https://www.scmr.com/"
+      },
+      {
+        "id": "arizon",
+        "url": "https://www.arizonrfid.com/blog",
+        "status": 200,
+        "responseUrl": "https://www.arizonrfid.com/blog"
+      }
+    ]
+  },
+  "validated": {
+    "local:hana": {
+      "count": 10,
+      "dated": 10,
+      "latest": "2026-09-14T16:52:29.000Z",
+      "samples": [
+        {
+          "url": "https://hanarfid.com/insights/blog/small-uhf-rfid-inlay/",
+          "publishedAt": "2026-09-14T16:52:29.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/rfid-baggage-tagging-purpose-built-inlay/",
+          "publishedAt": "2026-09-14T16:18:01.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/esd-best-practices-rfid-inlay-converting/",
+          "publishedAt": "2026-08-31T17:10:46.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "local:schreiner": {
+      "count": 10,
+      "dated": 10,
+      "latest": "2026-05-26T13:06:13.000Z",
+      "samples": [
+        {
+          "url": "https://forum.schreiner-group.com/en/securely-sealed-digitally-connected/",
+          "publishedAt": "2026-05-26T13:06:13.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-05-26T13:06:13.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://forum.schreiner-group.com/en/logimat-2026-momentum-for-connected-intralogistics/",
+          "publishedAt": "2026-05-26T12:35:13.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-05-26T12:35:13.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://forum.schreiner-group.com/en/your-ids-please/",
+          "publishedAt": "2026-05-26T12:31:58.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-05-26T12:31:58.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "local:hid": {
+      "count": 6,
+      "dated": 6,
+      "latest": "2026-09-02T13:00:19.000Z",
+      "samples": [
+        {
+          "url": "https://newsroom.hidglobal.com/mercury-strengthens-and-streamlines-access-control-expansion-new-s4-io-modules",
+          "publishedAt": "2026-09-02T13:00:19.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-09-02T13:00:19.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://newsroom.hidglobal.com/hid-soloinsight-and-cts-introduce-integrated-self-service-visitor-check-kiosk-global-enterprises",
+          "publishedAt": "2026-08-11T13:00:00.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-08-11T13:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://newsroom.hidglobal.com/hid-enters-agreement-swiftconnect-transfer-workforce-business-unit",
+          "publishedAt": "2026-07-22T13:00:11.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-07-22T13:00:11.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "local:mmh": {
+      "count": 50,
+      "dated": 50,
+      "latest": "2026-09-04T14:09:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.mmh.com/article/northeast_texas_community_college_certified_for_material_handling_robotics_training",
+          "publishedAt": "2026-09-04T14:09:00.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.mmh.com/article/kuka_robotics_achieves_iec_cybersecurity_certification",
+          "publishedAt": "2026-09-04T13:47:00.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.mmh.com/article/dates_set_for_modex_2028_in_atlanta",
+          "publishedAt": "2026-09-03T10:25:00.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "local:arizon": {
+      "count": 10,
+      "rawCount": 10,
+      "dated": 10,
+      "latest": "2026-02-24T16:00:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.arizonrfid.com/blog/news-5/arizon-rfid-auburn-board-33",
+          "publishedAt": "2026-02-24T16:00:00.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-02-25T10:50:29.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.arizonrfid.com/blog/news-5/the-rfid-advantage-why-your-self-checkout-needs-the-perfect-tag-31",
+          "publishedAt": "2025-11-20T16:00:00.000Z",
+          "status": 200,
+          "detailPublishedAt": "2025-11-21T03:22:05.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.arizonrfid.com/blog/news-5/arizons-ultra-compact-az-mr8p-42x16mm-inlay-gains-seven-arc-certifications-for-walmart-global-supply-chain-compliance-30",
+          "publishedAt": "2025-11-18T16:00:00.000Z",
+          "status": 200,
+          "detailPublishedAt": "2025-11-19T09:51:38.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "local:auburn": {
+      "count": 9,
+      "rawCount": 9,
+      "dated": 0,
+      "samples": [
+        {
+          "url": "https://rfid.auburn.edu/news/news_pages/AuburnRFIDLabHackathon2026.php?utm_source=rfid&utm_medium=web",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://wire.auburn.edu/content/ocm/2026/01/060806-rfid-and-carv-labs-team-up-with-nasa.php",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2026-01-06T00:00:00.000Z",
+          "titleMatches": false,
+          "error": null
+        },
+        {
+          "url": "https://harbert.auburn.edu/news/2025/04/sharing-knowledge-and-pursuing-innovation.html",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": false,
+          "error": null
+        }
+      ]
+    },
+    "local:fda-updates": {
+      "count": 204,
+      "dated": 0,
+      "samples": [
+        {
+          "url": "https://www.fda.gov/food/guidance-regulation-food-and-dietary-supplements/food-safety-modernization-act-fsma",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2024-02-05T09:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.fda.gov/food/food-safety-modernization-act-fsma/frequently-asked-questions-fsma",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2025-09-30T12:05:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-rules-guidance-industry",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2026-08-11T11:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "local:hana-blog": {
+      "count": 4,
+      "rawCount": 10,
+      "dated": 4,
+      "latest": "2026-09-14T16:52:29.000Z",
+      "samples": [
+        {
+          "url": "https://hanarfid.com/insights/blog/small-uhf-rfid-inlay/",
+          "publishedAt": "2026-09-14T16:52:29.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-09-14T04:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/rfid-baggage-tagging-purpose-built-inlay/",
+          "publishedAt": "2026-09-14T16:18:01.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-09-14T04:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/esd-best-practices-rfid-inlay-converting/",
+          "publishedAt": "2026-08-31T17:10:46.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-08-31T04:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "local:scmr-rss": {
+      "count": 50,
+      "rawCount": 50,
+      "dated": 50,
+      "latest": "2026-10-02T14:25:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.scmr.com/article/first-shift-export-controls-tighten-as-manufacturers-confront-rising-costs",
+          "publishedAt": "2026-10-02T14:25:00.000Z",
+          "status": 403,
+          "detailPublishedAt": null,
+          "titleMatches": null,
+          "error": null
+        },
+        {
+          "url": "https://www.scmr.com/article/the-rise-of-the-end-to-end-planner-four-skills-for-an-ai-driven-future",
+          "publishedAt": "2026-10-02T12:37:00.000Z",
+          "status": 403,
+          "detailPublishedAt": null,
+          "titleMatches": null,
+          "error": null
+        },
+        {
+          "url": "https://www.scmr.com/article/steel-trade-defenses-rise-as-supplier-and-freight-constraints-tighten",
+          "publishedAt": "2026-10-01T14:17:00.000Z",
+          "status": 403,
+          "detailPublishedAt": null,
+          "titleMatches": null,
+          "error": null
+        }
+      ]
+    },
+    "local:mmh-web": {
+      "count": 15,
+      "dated": 15,
+      "latest": "2026-10-02T14:01:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.mmh.com/article/mhi_announces_leadership_appointments_for_2027/",
+          "publishedAt": "2026-10-02T14:01:00.000Z",
+          "detailPublishedAt": "2026-10-02T00:00:00.000Z",
+          "titleMatches": true,
+          "bodyChars": 3416
+        },
+        {
+          "url": "https://www.mmh.com/article/automated_material_handling_equipment_market_to_reach_61.14_billion_by_2030/",
+          "publishedAt": "2026-10-02T13:52:00.000Z",
+          "detailPublishedAt": "2026-10-02T00:00:00.000Z",
+          "titleMatches": true,
+          "bodyChars": 2092
+        },
+        {
+          "url": "https://www.mmh.com/article/clark_material_handling_names_bob_martinolli_coo/",
+          "publishedAt": "2026-10-02T13:46:00.000Z",
+          "detailPublishedAt": "2026-10-02T00:00:00.000Z",
+          "titleMatches": true,
+          "bodyChars": 2555
+        }
+      ]
+    },
+    "server:hana": {
+      "count": 10,
+      "dated": 10,
+      "latest": "2026-09-14T16:52:29.000Z",
+      "samples": [
+        {
+          "url": "https://hanarfid.com/insights/blog/small-uhf-rfid-inlay/",
+          "publishedAt": "2026-09-14T16:52:29.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/rfid-baggage-tagging-purpose-built-inlay/",
+          "publishedAt": "2026-09-14T16:18:01.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/esd-best-practices-rfid-inlay-converting/",
+          "publishedAt": "2026-08-31T17:10:46.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "server:schreiner": {
+      "count": 10,
+      "dated": 10,
+      "latest": "2026-05-26T13:06:13.000Z",
+      "samples": [
+        {
+          "url": "https://forum.schreiner-group.com/en/securely-sealed-digitally-connected/",
+          "publishedAt": "2026-05-26T13:06:13.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-05-26T13:06:13.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://forum.schreiner-group.com/en/logimat-2026-momentum-for-connected-intralogistics/",
+          "publishedAt": "2026-05-26T12:35:13.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-05-26T12:35:13.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://forum.schreiner-group.com/en/your-ids-please/",
+          "publishedAt": "2026-05-26T12:31:58.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-05-26T12:31:58.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "server:hid": {
+      "error": "Error: HTTP 403",
+      "samples": []
+    },
+    "server:mmh": {
+      "count": 50,
+      "dated": 50,
+      "latest": "2026-09-04T14:09:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.mmh.com/article/northeast_texas_community_college_certified_for_material_handling_robotics_training",
+          "publishedAt": "2026-09-04T14:09:00.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.mmh.com/article/kuka_robotics_achieves_iec_cybersecurity_certification",
+          "publishedAt": "2026-09-04T13:47:00.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.mmh.com/article/dates_set_for_modex_2028_in_atlanta",
+          "publishedAt": "2026-09-03T10:25:00.000Z",
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "server:arizon": {
+      "count": 10,
+      "rawCount": 10,
+      "dated": 10,
+      "latest": "2026-02-24T16:00:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.arizonrfid.com/blog/news-5/arizon-rfid-auburn-board-33",
+          "publishedAt": "2026-02-24T16:00:00.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-02-25T10:50:29.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.arizonrfid.com/blog/news-5/the-rfid-advantage-why-your-self-checkout-needs-the-perfect-tag-31",
+          "publishedAt": "2025-11-20T16:00:00.000Z",
+          "status": 200,
+          "detailPublishedAt": "2025-11-21T03:22:05.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.arizonrfid.com/blog/news-5/arizons-ultra-compact-az-mr8p-42x16mm-inlay-gains-seven-arc-certifications-for-walmart-global-supply-chain-compliance-30",
+          "publishedAt": "2025-11-18T16:00:00.000Z",
+          "status": 200,
+          "detailPublishedAt": "2025-11-19T09:51:38.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "server:auburn": {
+      "count": 9,
+      "rawCount": 9,
+      "dated": 0,
+      "samples": [
+        {
+          "url": "https://rfid.auburn.edu/news/news_pages/AuburnRFIDLabHackathon2026.php?utm_source=rfid&utm_medium=web",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://wire.auburn.edu/content/ocm/2026/01/060806-rfid-and-carv-labs-team-up-with-nasa.php",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2026-01-06T00:00:00.000Z",
+          "titleMatches": false,
+          "error": null
+        },
+        {
+          "url": "https://harbert.auburn.edu/news/2025/04/sharing-knowledge-and-pursuing-innovation.html",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": null,
+          "titleMatches": false,
+          "error": null
+        }
+      ]
+    },
+    "server:fda-updates": {
+      "count": 204,
+      "dated": 0,
+      "samples": [
+        {
+          "url": "https://www.fda.gov/food/guidance-regulation-food-and-dietary-supplements/food-safety-modernization-act-fsma",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2024-02-05T09:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.fda.gov/food/food-safety-modernization-act-fsma/frequently-asked-questions-fsma",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2025-09-30T12:05:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-rules-guidance-industry",
+          "publishedAt": null,
+          "status": 200,
+          "detailPublishedAt": "2026-08-11T11:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "server:hana-blog": {
+      "count": 4,
+      "rawCount": 10,
+      "dated": 4,
+      "latest": "2026-09-14T16:52:29.000Z",
+      "samples": [
+        {
+          "url": "https://hanarfid.com/insights/blog/small-uhf-rfid-inlay/",
+          "publishedAt": "2026-09-14T16:52:29.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-09-14T04:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/rfid-baggage-tagging-purpose-built-inlay/",
+          "publishedAt": "2026-09-14T16:18:01.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-09-14T04:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        },
+        {
+          "url": "https://hanarfid.com/insights/blog/esd-best-practices-rfid-inlay-converting/",
+          "publishedAt": "2026-08-31T17:10:46.000Z",
+          "status": 200,
+          "detailPublishedAt": "2026-08-31T04:00:00.000Z",
+          "titleMatches": true,
+          "error": null
+        }
+      ]
+    },
+    "server:scmr-rss": {
+      "count": 50,
+      "rawCount": 50,
+      "dated": 50,
+      "latest": "2026-10-02T14:25:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.scmr.com/article/first-shift-export-controls-tighten-as-manufacturers-confront-rising-costs",
+          "publishedAt": "2026-10-02T14:25:00.000Z",
+          "status": 403,
+          "detailPublishedAt": null,
+          "titleMatches": null,
+          "error": null
+        },
+        {
+          "url": "https://www.scmr.com/article/the-rise-of-the-end-to-end-planner-four-skills-for-an-ai-driven-future",
+          "publishedAt": "2026-10-02T12:37:00.000Z",
+          "status": 403,
+          "detailPublishedAt": null,
+          "titleMatches": null,
+          "error": null
+        },
+        {
+          "url": "https://www.scmr.com/article/steel-trade-defenses-rise-as-supplier-and-freight-constraints-tighten",
+          "publishedAt": "2026-10-01T14:17:00.000Z",
+          "status": 403,
+          "detailPublishedAt": null,
+          "titleMatches": null,
+          "error": null
+        }
+      ]
+    },
+    "server:mmh-web": {
+      "count": 15,
+      "dated": 15,
+      "latest": "2026-10-02T14:01:00.000Z",
+      "samples": [
+        {
+          "url": "https://www.mmh.com/article/mhi_announces_leadership_appointments_for_2027/",
+          "publishedAt": "2026-10-02T14:01:00.000Z",
+          "detailPublishedAt": "2026-10-02T00:00:00.000Z",
+          "titleMatches": true,
+          "bodyChars": 3416
+        },
+        {
+          "url": "https://www.mmh.com/article/automated_material_handling_equipment_market_to_reach_61.14_billion_by_2030/",
+          "publishedAt": "2026-10-02T13:52:00.000Z",
+          "detailPublishedAt": "2026-10-02T00:00:00.000Z",
+          "titleMatches": true,
+          "bodyChars": 2092
+        },
+        {
+          "url": "https://www.mmh.com/article/clark_material_handling_names_bob_martinolli_coo/",
+          "publishedAt": "2026-10-02T13:46:00.000Z",
+          "detailPublishedAt": "2026-10-02T00:00:00.000Z",
+          "titleMatches": true,
+          "bodyChars": 2555
+        }
+      ]
+    }
+  },
+  "issues": {
+    "local": [
+      {
+        "id": "gs1http",
+        "url": "http://www.gs1cn.org/",
+        "status": 200,
+        "responseUrl": "http://www.gs1cn.org/"
+      },
+      {
+        "id": "gs1https",
+        "url": "https://www.gs1cn.org/",
+        "error": "TypeError: fetch failed",
+        "cause": "Error: certificate has expired",
+        "code": "CERT_HAS_EXPIRED"
+      }
+    ],
+    "server": [
+      {
+        "id": "gs1http",
+        "url": "http://www.gs1cn.org/",
+        "status": 200,
+        "responseUrl": "http://www.gs1cn.org/"
+      },
+      {
+        "id": "gs1https",
+        "url": "https://www.gs1cn.org/",
+        "error": "TypeError: fetch failed",
+        "cause": "Error: certificate has expired",
+        "code": "CERT_HAS_EXPIRED"
+      }
+    ],
+    "hana_date_conflict": {
+      "url": "https://hanarfid.com/insights/news/hana-rfid-welcomes-tony-morris-as-vice-president-of-sales-to-advance-global-customer-programs/",
+      "website_rss_date": "2026-04-15",
+      "body_press_release_dateline": "2025-12-05",
+      "event_effective_date": "2025-12-01",
+      "decision": "只推荐 Blog 分类，News 暂缓；不把事件发生日期自动当发布时间。"
+    },
+    "mmh_feed_stale": {
+      "feed_latest": "2026-09-04T14:09:00.000Z",
+      "web_latest": "2026-10-02T14:01:00.000Z",
+      "decision": "推荐网页列表，暂不用落后的 RSS。"
+    }
+  }
+}

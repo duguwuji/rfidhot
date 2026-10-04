@@ -986,6 +986,131 @@
       "site_fulltext": false,
       "syndicate_fulltext": false,
       "enabled": true
+    },
+    {
+      "id": "rss-hana-blog",
+      "name": "Hana RFID 技术博客",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://hanarfid.com/feed/",
+        "allowCategories": [
+          "Blog"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "allowUrlPrefixes": [
+          "https://hanarfid.com/insights/blog/"
+        ]
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-schreiner-rfid",
+      "name": "Schreiner RFID／NFC 专题",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://forum.schreiner-group.com/en/tag/rfid-nfc-en/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-arizon",
+      "name": "Arizon RFID 官方新闻",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.arizonrfid.com/blog",
+        "itemSelector": ".card:has(a.o_blog_post_title)",
+        "linkSelector": "a.o_blog_post_title",
+        "titleSelector": "a.o_blog_post_title",
+        "publishedAtSelector": "time",
+        "publishedAtUtcOffset": "+08:00",
+        "allowUrlPrefixes": [
+          "https://www.arizonrfid.com/blog/news-5/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "summarySelector": "meta[name=\"description\"]",
+          "publishedAtRegex": "\"datePublished\"\\s*:\\s*\"([^\"]+)\"",
+          "upgradeDatePrecision": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-mmh-news",
+      "name": "Modern Materials Handling 行业资讯",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.mmh.com/",
+        "itemSelector": "div#home-content:has(> a[href^=\"/article/\"])",
+        "linkSelector": "a[href^=\"/article/\"]",
+        "titleSelector": ".head",
+        "publishedAtRegex": "<span\\b(?=[^>]*\\bitemprop=\"datePublished\")[^>]*\\bcontent=\"([^\"]+)\"",
+        "allowUrlPrefixes": [
+          "https://www.mmh.com/article/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "summarySelector": "meta[name=\"description\"]"
+        }
+      },
+      "tier": "T2",
+      "first_party": false,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "行业媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
     }
   ]
 }
