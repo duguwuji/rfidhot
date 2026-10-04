@@ -1,5 +1,5 @@
 {
-  "$comment": "RFID 首批信源：官网和原始公告优先，媒体补充；默认仅摘要与链接。已存在信源不被 seed 覆盖。GS1、Walmart、3GPP 暂停，详情见 docs/rfid.md。",
+  "$comment": "RFID 信源：官网和原始公告优先，媒体补充；默认仅摘要与链接。已存在信源不被 seed 覆盖。GS1、Walmart、3GPP 暂停，详情见 docs/rfid.md。",
   "sources": [
     {
       "id": "web-impinj-news",
@@ -580,6 +580,166 @@
       "site_fulltext": false,
       "syndicate_fulltext": false,
       "enabled": false
+    },
+    {
+      "id": "rss-feig-news",
+      "name": "FEIG 官方新闻",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.feig.de/en/news-en/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-checkpoint-news",
+      "name": "Checkpoint Systems 官方资讯",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://checkpointsystems.com/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": "checkpoint",
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-aim-news",
+      "name": "AIM Global 资讯与博客",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.aimglobal.org/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1_5",
+      "first_party": false,
+      "owner_entity_id": "aim",
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "机构资讯",
+        "会员新闻"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-ieee-rfid-news",
+      "name": "IEEE Council on RFID 新闻",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.ieee-rfid.org/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "allowCategories": [
+          "News",
+          "Conferences"
+        ]
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-rfid-world-news",
+      "name": "RFID 世界网资讯",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.rfidworld.com.cn/news/index.html",
+        "itemSelector": "#tab-0-ul > li",
+        "linkSelector": "a",
+        "titleSelector": ".title",
+        "allowUrlPrefixes": [
+          "https://www.rfidworld.com.cn/news/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1.content-title",
+          "publishedAtSelector": ".rq",
+          "publishedAtAuthoritative": true,
+          "publishedAtUtcOffset": "+08:00"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "first_party": false,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-think-wiot-news",
+      "name": "Think WIoT 行业资讯",
+      "kind": "web_list",
+      "config": {
+        "url": "https://wiot-group.com/think/en/",
+        "itemSelector": "a[aria-labelledby^=\"feed-news-title-\"]",
+        "titleSelector": "h3",
+        "allowUrlPrefixes": [
+          "https://wiot-group.com/think/en/news/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "publishedAtUtcOffset": "+00:00"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "first_party": false,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
     }
   ]
 }
