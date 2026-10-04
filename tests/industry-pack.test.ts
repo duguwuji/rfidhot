@@ -36,6 +36,17 @@ test("Avery cards retain the headline and date rather than Read more", () => {
   assert.equal(rows[0]!.publishedAt?.toISOString(), "2026-09-15T00:00:00.000Z");
 });
 
+test("Impinj blog cards retain source dates beyond the detail budget and exclude the undated spotlight", () => {
+  const s = source("web-impinj-blog");
+  const card = (n: number) => `<a class="feature-destination" href="/library/blog/post-${n}"><h5 class="feature-heading">RFID technical post ${n}</h5><p class="feature-copy">Card summary mentioning a different date, 2026.</p><small class="feature-meta">15 Jul 2025</small></a>`;
+  const spotlight = '<a class="spotlight-heading-link" href="/library/blog/post-0">Featured RFID technical post</a>';
+  const rows = fromHtml(spotlight + Array.from({ length: 12 }, (_, n) => card(n)).join(""), s.config.url, s);
+  assert.equal(rows.length, 12);
+  assert.ok(rows.length > s.config.detail.maxFetches);
+  assert.equal(rows[0]!.title, "RFID technical post 0");
+  assert.ok(rows.every((r) => r.publishedAt?.toISOString() === "2025-07-15T00:00:00.000Z"));
+});
+
 test("Tageos cards parse rendered date instead of Unix epoch datetime", () => {
   const s = source("web-tageos-news");
   const rows = fromHtml('<div class="textteaser-icon-textwrapper"><h3>New food packaging inlay</h3><time datetime="1789477247">September 15, 2026</time><div class="textteaser-icon-text"><a href="/en/why-tageos/news/news-details/new-inlay.html">Read more</a></div></div>', s.config.url, s);

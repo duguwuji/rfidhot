@@ -43,7 +43,10 @@
       "kind": "web_list",
       "config": {
         "url": "https://www.impinj.com/library/blog",
-        "itemSelector": "a[href]",
+        "itemSelector": "a.feature-destination",
+        "titleSelector": "h5.feature-heading",
+        "publishedAtSelector": "small.feature-meta",
+        "publishedAtUtcOffset": "+00:00",
         "allowUrlPrefixes": [
           "https://www.impinj.com/library/blog/"
         ],
