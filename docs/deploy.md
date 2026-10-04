@@ -16,7 +16,7 @@ docker compose up -d --build
 
 `init-env.ts` 会生成 `.env`，填好随机密钥和管理员密码，并把密码打印一次。机器上没有 Node 的话，把 `.env.example` 复制成 `.env`，自己填 `ADMIN_PASSWORD`（至少 12 位）、`SESSION_SECRET`、`IMG_PROXY_SIGN_SECRET`、`POSTGRES_PASSWORD`（各用 `openssl rand -hex 32` 生成）和 `LLM_API_KEY`。
 
-启动后打开 `http://服务器地址:3000`，后台在 `/admin`，用管理员密码登录。第一次启动会导入 RFID 主题与 22 个信源入口，其中 19 个默认启用。采集和模型安全阀关闭时页面保持空状态；按 [RFID 交接说明](rfid.md) 完成试抓、模型预算和运营资料核对后再开启。
+启动后打开 `http://服务器地址:3000`，后台在 `/admin`，用管理员密码登录。第一次启动会导入 RFID 主题与 27 个信源入口，其中 24 个默认启用。采集和模型安全阀关闭时页面保持空状态；按 [RFID 交接说明](rfid.md) 完成试抓、模型预算和运营资料核对后再开启。
 
 `docker compose` 会起五个容器：`db`（PostgreSQL 17）、`setup`（每次启动先跑数据库迁移和种子数据，然后退出）、`api`、`worker`（抓取、模型处理、定时任务）、`web`（网页）。
 
