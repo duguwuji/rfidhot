@@ -79,6 +79,21 @@ HID RFID 技术博客暂缓接入：本机 RSS 为 HTTP 200，Google Cloud 部�
 
 当前行业包共 29 个入口、26 个默认启用。已有站点由 seed 仅新增缺少来源，不覆盖后台编辑。SML 为可选补充，本次未选择；GS1 全球标准更新页访问返回 403、GS1 UK 新闻未解析到文章，继续暂缓接入。GS1 标准版本目录提供 Last modified，不能直接当作原始新闻发布时间。
 
+## 2026-10-05 文本候选信源接入
+
+经运营者确认，接入四个经过本机和 Google Cloud 环境验证的入口。详细核验、访问限制和日期样本见[信源审计](source-audits/2026-10-05/report.md)。下面是只读预览的候选数，不表示近期或最终入选数。
+
+| 入口 | 候选数 | 解析与编辑限制 |
+|---|---:|---|
+| [Hana RFID 技术博客](https://hanarfid.com/insights/) | 4 | RSS 只收 Blog 分类及 /insights/blog/ 路径；旧 News 公告存在重新发布日期与正文通稿日期冲突，不接入 |
+| [Schreiner RFID／NFC 专题](https://forum.schreiner-group.com/en/tag/rfid-nfc-en/) | 10 | 专题 RSS 日期与详情一致；涵盖工业、制药和 DPP，厂商声明保留归因 |
+| [Arizon RFID 官方新闻](https://www.arizonrfid.com/blog) | 10 | 只收 News 路径，排除 Events；列表日期按北京时间，详情 JSON-LD datePublished 补充精度，避免无时区 meta 的八小时偏差 |
+| [Modern Materials Handling 行业资讯](https://www.mmh.com/) | 15 | 网页列表的 datePublished 属性日期；公开 RSS 更新落后，改用网页。T2、非一手；泛仓储、自动化与人事公告仍经过 RFID 相关性预筛 |
+
+四个来源默认启用，每 720 分钟采集一次；首次历史导入最多 8 篇且只取最近 12 个月，网页详情每轮最多 8 次。仅公开摘要与原文链接，不调整评分门槛、模型预算或增加付费采集服务。当前行业包共 33 个入口、30 个默认启用。已有站点由 seed 仅新增缺少来源，不覆盖已有后台编辑。
+
+SCMR 仅 RSS 可读、详情受限，暂不接入；Auburn 的不同子站日期规则需补齐；FDA 专题页作为监管核验资料，不能把维护日期当新闻发布时间；GS1 China HTTPS 证书过期且静态页面为 JavaScript 壳；HID 云端列表和 RSS 返回 403。以上入口继续暂缓。
+
 ## 新站与已有站点
 
 新站按 [部署](deploy.md) 初始化环境，运行原始迁移与 `scripts/seed.ts`。站点地址由 `SITE_URL` 配置；模型由 `LLM_BASE_URL`、`LLM_API_KEY`、`LLM_MODEL` 配置。密钥不能入库或提交到 Git。
