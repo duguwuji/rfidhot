@@ -277,8 +277,8 @@ export async function translateQuotes(opts: { days?: number; limit?: number; bud
 }
 
 /**
- * Every few minutes: selected full-text items discovered or revised in the last three days that lack a
- * translation of their current revision, then the posts selected X posts quote. Stops after a time
+ * Every few minutes: selected full-text news lacking a current translation, including the backlog
+ * when a source newly permits full-text reading. X posts retain their three-day window. Stops after a time
  * budget. A translation of an older revision is not shown (items.ts), so a revised item is translated
  * again whatever its age.
  */
@@ -288,7 +288,7 @@ export async function translatePending(opts: { limit?: number; budgetMs?: number
     SELECT p.article_id FROM publications p JOIN articles a ON a.id = p.article_id
     LEFT JOIN translations tr ON tr.article_id = p.article_id AND tr.lang = 'zh'
     WHERE p.selected AND p.visibility = 'public' AND p.body_mode = 'full' AND coalesce(a.language, '') <> 'zh'
-      AND (p.discovered_at > now() - interval '3 days'
+      AND (p.channel = 'news' OR p.discovered_at > now() - interval '3 days'
            OR EXISTS (SELECT 1 FROM article_revisions r WHERE r.article_id = a.id AND r.revision = a.revision AND r.revision > 1
                       AND r.created_at > now() - interval '3 days'))
       AND (tr.article_id IS NULL OR (tr.origin <> 'source' AND tr.revision < a.revision))

@@ -136,3 +136,31 @@ test("the post a selected X post quotes is translated once and shown with the it
   const receipts = await sql`SELECT 1 FROM receipts WHERE purpose = 'translate_quoted' AND subject = ${`quote:${tweetId}`}`;
   assert.equal(receipts.length, 1, "translated once");
 });
+
+test("an older selected news item is translated when its source newly permits full text", async () => {
+  const old = new Date(Date.now() - 10 * 86400_000);
+  await sql`UPDATE sources SET site_fulltext = false WHERE id = ${SOURCE}`;
+  const { articleId: id } = await upsertMaterial({
+    sourceId: SOURCE, url: `${URL_}-old`, title: `Old selected ${T}`, language: "en",
+    bodyText: `The price is ten dollars (${T}).`, bodyHtml: `<h2>Old heading ${T}</h2><p>The price is ten dollars (${T}).</p>`,
+    bodyStatus: "ok", via: "fetch", publishedAt: old, discoveredAt: old,
+  });
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
+            VALUES (${id}, 1, 'rule', 'pass', 'technology', ${`旧闻-${T}`}, '摘要', '理由', 90, true)`;
+  await publishArticle(id, { releasedAt: old });
+  const hits = provider.hits();
+  assert.equal((await detail(id)).body, null, "summary-only sources cannot expose their stored body");
+  assert.equal(provider.hits(), hits, "reading a page never calls the model");
+
+  await sql`UPDATE sources SET site_fulltext = true WHERE id = ${SOURCE}`;
+  await publishArticle(id, { releasedAt: old });
+  const run = await translatePending({ limit: 100 });
+  assert.ok(run.done.some(r => r.articleId === id && r.status === "translated"), "revision 1 discovered ten days ago is eligible");
+  const current = await detail(id);
+  assert.ok(current.body.zh?.includes("十美元") && current.body.complete, "default reading shows the full current Chinese translation");
+  const [stored] = await sql<{ revision: number }[]>`SELECT revision FROM articles WHERE id = ${id}`;
+  assert.equal(stored?.revision, 1, "translation does not revise or reanalyse the original article");
+  const beforeRead = provider.hits();
+  await detail(id);
+  assert.equal(provider.hits(), beforeRead);
+});

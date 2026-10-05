@@ -8,6 +8,7 @@ import { ITEM_COLUMNS, ITEM_FROM, selectedCondition, toItemSummary, xView, type 
 import { itemUrl } from "./links.ts";
 import { hasItemPage } from "./rules.ts";
 import { SITE } from "@rfidhot/industry/site";
+import { licensedBody } from "./licensed-body.ts";
 
 interface DetailRow extends ItemRow {
   body_html: string | null;
@@ -90,16 +91,20 @@ export async function loadItemDetail(id: string, now = new Date()): Promise<Deta
     };
   } else if (row.body_mode === "full" && row.body_html) {
     const isZh = row.language === "zh" || (/[一-鿿]/.test(row.body_text?.slice(0, 400) ?? "") && row.language !== "en");
-    const original = proxyBodyImages(row.body_html);
-    const zh = isZh ? original : row.tr_html ? proxyBodyImages(row.tr_html) : null;
-    const primary = withOutline(zh ?? original);
-    outline = primary.outline;
-    body = {
-      zh: zh ? primary.html : null,
-      original: zh && !isZh ? withOutline(original).html : isZh ? null : primary.html,
-      zhKind: isZh ? "original" : zh ? "translation" : null,
-      complete: isZh ? true : row.tr_complete ?? false,
-    };
+    const originalHtml = licensedBody(row.body_html, row.source_id, row.url, false);
+    if (originalHtml) {
+      const original = proxyBodyImages(originalHtml);
+      const translatedHtml = row.tr_html ? licensedBody(row.tr_html, row.source_id, row.url, true) : null;
+      const zh = isZh ? original : translatedHtml ? proxyBodyImages(translatedHtml) : null;
+      const primary = withOutline(zh ?? original);
+      outline = primary.outline;
+      body = {
+        zh: zh ? primary.html : null,
+        original: zh && !isZh ? withOutline(original).html : isZh ? null : primary.html,
+        zhKind: isZh ? "original" : zh ? "translation" : null,
+        complete: isZh ? true : row.tr_complete ?? false,
+      };
+    }
   }
 
   let group: ItemDetail["group"] = null;
@@ -173,8 +178,10 @@ export async function exportMarkdown(id: string): Promise<{ filename: string; bo
     if (q?.text && row.quoted_zh) lines.push("### 引用中文译文", "", ...row.quoted_zh.split("\n").map((l) => `> ${l}`), "");
   } else if (row.body_mode === "full" && row.body_html) {
     const isZh = row.language === "zh";
-    if (!isZh && row.tr_html && row.tr_complete) lines.push("## 正文 · 中文译文", "", turndown.turndown(row.tr_html), "");
-    lines.push(isZh ? "## 正文" : "## 正文 · 原文", "", turndown.turndown(row.body_html), "");
+    const original = licensedBody(row.body_html, row.source_id, row.url, false);
+    const translated = row.tr_html && row.tr_complete ? licensedBody(row.tr_html, row.source_id, row.url, true) : null;
+    if (!isZh && translated) lines.push("## 正文 · 中文译文", "", turndown.turndown(translated), "");
+    if (original) lines.push(isZh ? "## 正文" : "## 正文 · 原文", "", turndown.turndown(original), "");
   }
   return { filename: `rfidhot-${row.id}.md`, body: lines.join("\n").replace(/\n{3,}/g, "\n\n") };
 }
