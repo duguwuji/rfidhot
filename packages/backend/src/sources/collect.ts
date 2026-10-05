@@ -38,7 +38,7 @@ export function noiseFiltered(c: Candidate, source: SourceRow): boolean {
   return has(title, f.dropMarkersTitleOnly) || has(hay, f.dropMarkers);
 }
 
-function rewriteUrl(c: Candidate, source: SourceRow): Candidate {
+export function rewriteUrl(c: Candidate, source: SourceRow): Candidate {
   const rw = source.config.itemUrlPrefixRewrite;
   if (rw?.from && rw?.to && c.url.startsWith(rw.from)) return { ...c, url: rw.to + c.url.slice(rw.from.length) };
   return c;
