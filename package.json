@@ -15,7 +15,7 @@
     "dev:api": "npm run dev -w @rfidhot/api",
     "dev:worker": "npm run dev -w @rfidhot/worker",
     "dev:web": "npm run dev -w @rfidhot/web",
-    "typecheck": "tsc -p packages/contracts && tsc -p packages/backend && tsc -p apps/api && tsc -p apps/worker && tsc -p tests && npm run typecheck -w @rfidhot/web",
+    "typecheck": "tsc -p packages/contracts && tsc -p packages/backend && tsc -p apps/api && tsc -p apps/worker && tsc -p scripts && tsc -p tests && npm run typecheck -w @rfidhot/web",
     "test": "node --test --test-concurrency=1 --test-timeout=120000 \"tests/*.test.ts\""
   },
   "devDependencies": {

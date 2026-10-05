@@ -1,9 +1,10 @@
 // The single entrance for new material from every channel (collectors, external reports, imports).
 // It owns identity, revisions and the timeline rule, so no entrance can bypass them.
-import { sql, type Db } from "../db.ts";
+import { sql, type Db, type Tx } from "../db.ts";
 import { newArticleId, sha256 } from "../lib/ids.ts";
 import { identityKeyForUrl } from "../lib/url.ts";
 import { collapseWhitespace } from "../lib/text.ts";
+import { syncPublicationDatesTx } from "../publication/publish.ts";
 
 export interface MediaItem {
   kind: "image" | "video";
@@ -55,6 +56,7 @@ export interface MaterialResult {
   created: boolean;
   revised: boolean;
   backfill: boolean;
+  datesRepaired?: boolean;
 }
 
 // Material first discovered more than this long after its source time is archived by source time,
@@ -80,6 +82,23 @@ export function decideTimeline(claimed: Date | null | undefined, discoveredAt: D
   const backfill = backfillReason !== null;
   const timelineAt = backfill && publishedAt ? publishedAt : discoveredAt;
   return { publishedAt, timelineAt, backfill, backfillReason };
+}
+
+/** Fill only a missing date from its owning source, using the original discovery time. */
+export async function repairMaterialDateTx(tx: Tx, articleId: string, sourceId: string, claimed: Date): Promise<TimelineDecision | null> {
+  await tx`SELECT pg_advisory_xact_lock(hashtext('publication_dates'))`;
+  const [a] = await tx<{
+    discovered_at: Date; backfill: boolean; backfill_reason: string | null; published_at: Date | null;
+  }[]>`SELECT discovered_at, backfill, backfill_reason, published_at FROM articles
+       WHERE id = ${articleId} AND source_id = ${sourceId} FOR UPDATE`;
+  if (!a || a.published_at) return null;
+  const t = decideTimeline(claimed, a.discovered_at, a.backfill_reason ?? (a.backfill ? "existing-backfill" : null));
+  if (!t.publishedAt) return null;
+  await tx`UPDATE articles SET published_at = ${t.publishedAt}, published_at_claim = ${claimed},
+    timeline_at = ${t.timelineAt}, backfill = ${t.backfill}, backfill_reason = ${t.backfillReason},
+    updated_at = now() WHERE id = ${articleId} AND published_at IS NULL`;
+  await syncPublicationDatesTx(tx, articleId);
+  return t;
 }
 
 /**
@@ -130,6 +149,8 @@ export async function upsertMaterial(m: MaterialInput, db: Db = sql): Promise<Ma
 }
 
 async function upsertIn(db: Db, m: MaterialInput): Promise<MaterialResult> {
+  // Share the repair batch's lock before taking any article lock, including on INSERT conflict.
+  if (m.publishedAt) await db`SELECT pg_advisory_xact_lock(hashtext('publication_dates'))`;
   const identityKey = identityKeyFor(m);
   const discoveredAt = m.discoveredAt ?? new Date();
   const title = collapseWhitespace(m.title).slice(0, 1000) || m.url;
@@ -159,11 +180,16 @@ async function upsertIn(db: Db, m: MaterialInput): Promise<MaterialResult> {
     SELECT id, source_id, revision, content_hash, backfill, title, body_text, excerpt FROM articles WHERE identity_key = ${identityKey} FOR UPDATE`;
   await db`INSERT INTO article_discoveries (article_id, source_id, via, discovered_at)
            VALUES (${existing!.id}, ${m.sourceId}, ${m.via}, ${discoveredAt}) ON CONFLICT DO NOTHING`;
-  const unchanged: MaterialResult = { articleId: existing!.id, created: false, revised: false, backfill: existing!.backfill };
   // Another source listing the same material (an aggregator, a translated mirror, a hot signal) is a
   // discovery only: its title and summary are its own rendering, and taking them made the article flip
   // between the two sources' versions on every fetch. Only the article's own source revises it.
-  if (existing!.source_id !== m.sourceId) return unchanged;
+  if (existing!.source_id !== m.sourceId) return { articleId: existing!.id, created: false, revised: false, backfill: existing!.backfill };
+  const repaired = m.publishedAt ? await repairMaterialDateTx(db as Tx, existing!.id, m.sourceId, m.publishedAt) : null;
+  if (repaired) existing!.backfill = repaired.backfill;
+  const unchanged: MaterialResult = {
+    articleId: existing!.id, created: false, revised: false, backfill: existing!.backfill,
+    ...(repaired ? { datesRepaired: true } : {}),
+  };
   // What the row will hold after this report: a listing without body keeps the stored (extracted) body.
   const bodyText = m.bodyText ?? existing!.body_text;
   const excerpt = m.excerpt ?? existing!.excerpt;
@@ -201,5 +227,5 @@ async function upsertIn(db: Db, m: MaterialInput): Promise<MaterialResult> {
     RETURNING revision`;
   await db`INSERT INTO article_revisions (article_id, revision, content_hash, title, body_text)
            VALUES (${existing!.id}, ${row!.revision}, ${next}, ${title}, ${bodyText})`;
-  return { articleId: existing!.id, created: false, revised: true, backfill: existing!.backfill };
+  return { ...unchanged, revised: true };
 }

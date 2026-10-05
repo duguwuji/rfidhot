@@ -141,6 +141,52 @@ async function appendLedger(tx: Tx, articleId: string, op: "upsert" | "remove", 
   return next;
 }
 
+/** Repair stored dates without changing editorial decisions, release gates or delivery jobs. */
+export async function syncPublicationDatesTx(tx: Tx, articleId: string): Promise<void> {
+  // Date repairs can move a fact's anchor. Serialise them before locking projection rows;
+  // ordinary publication only locks its own projection and then the ledger.
+  await tx`SELECT pg_advisory_xact_lock(hashtext('publication_dates'))`;
+  await tx`SELECT pg_advisory_xact_lock_shared(hashtext('report_candidates'))`;
+  const [p] = await tx<(PublicationRow & {
+    published_at: Date | null; discovered_at: Date; timeline_at: Date; url: string; source_id: string;
+  })[]>`
+    UPDATE publications p SET published_at = a.published_at, timeline_at = a.timeline_at,
+      backfill = a.backfill, revision = p.revision + 1, updated_at = now()
+    FROM articles a WHERE p.article_id = ${articleId} AND a.id = p.article_id
+      AND (p.published_at, p.timeline_at, p.backfill)
+        IS DISTINCT FROM (a.published_at, a.timeline_at, a.backfill)
+    RETURNING p.*`;
+  if (!p) return; // An unanalysed article stays unpublished.
+  await tx`
+    UPDATE publications p SET sort_at = anchor.sort_at, revision = p.revision + 1, updated_at = now()
+    FROM (
+      SELECT q.article_id, CASE WHEN q.selected AND q.fact_id IS NOT NULL THEN
+        LEAST(q.timeline_at, coalesce((SELECT min(m.timeline_at) FROM publications m
+          WHERE m.fact_id = q.fact_id AND m.eligible AND m.visibility = 'public'
+            AND m.article_id <> q.article_id), q.timeline_at)) ELSE q.timeline_at END AS sort_at
+      FROM publications q WHERE q.article_id = ${articleId}
+        OR (q.selected AND q.fact_id = ${p.fact_id})
+    ) anchor
+    WHERE p.article_id = anchor.article_id AND p.sort_at IS DISTINCT FROM anchor.sort_at`;
+  if (!p.selected || p.visibility !== "public") return;
+  const [source] = await tx<{ name: string }[]>`SELECT name FROM sources WHERE id = ${p.source_id}`;
+  const payload = v1Payload({
+    articleId, title: p.title, originalTitle: p.original_title, summary: p.summary, sourceName: source!.name,
+    url: p.url, publishedAt: p.published_at, discoveredAt: p.discovered_at, category: p.category,
+    score: p.score === null ? null : Number(p.score), selected: true, reason: p.reason,
+  });
+  const payloadHash = sha256(stableJson(payload));
+  const [state] = await tx<{ in_set: boolean; payload_hash: string | null }[]>`
+    SELECT in_set, payload_hash FROM selected_state WHERE article_id = ${articleId}`;
+  if (state?.in_set && state.payload_hash === payloadHash) return;
+  const now = new Date();
+  const visibleAt = p.visible_after && p.visible_after > now ? p.visible_after : now;
+  const seq = await appendLedger(tx, articleId, "upsert", payload, visibleAt, now);
+  await tx`INSERT INTO selected_state (article_id, in_set, payload_hash, last_seq)
+    VALUES (${articleId}, true, ${payloadHash}, ${seq}) ON CONFLICT (article_id)
+    DO UPDATE SET in_set = true, payload_hash = EXCLUDED.payload_hash, last_seq = EXCLUDED.last_seq`;
+}
+
 export async function publishArticle(articleId: string, options: PublishOptions = {}): Promise<PublishResult | null> {
   return sql.begin((tx) => publishArticleTx(tx, articleId, options));
 }
