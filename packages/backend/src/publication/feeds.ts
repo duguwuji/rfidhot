@@ -11,6 +11,7 @@ import { reportHeadline, reportIndex } from "./reports.ts";
 import { textToHtml } from "../content/sanitize.ts";
 import { categoryCondition, listedCondition, selectedCondition, xView, type ItemRow } from "./items.ts";
 import { dailyUrl, itemUrl, siteUrl } from "./links.ts";
+import { licensedBody } from "./licensed-body.ts";
 
 interface FeedMeta {
   id: string;
@@ -57,7 +58,7 @@ ${items.join("\n")}
 }
 
 type FeedRow = Pick<ItemRow, "id" | "title" | "summary" | "url" | "category" | "published_at" | "discovered_at" | "source_name"> &
-  Partial<Pick<ItemRow, "channel" | "x_post" | "zh_text" | "quoted_zh" | "language" | "syndicate"> & {
+  Partial<Pick<ItemRow, "source_id" | "channel" | "x_post" | "zh_text" | "quoted_zh" | "language" | "syndicate"> & {
     body_html: string | null; tr_html: string | null; tr_complete: boolean | null;
   }>;
 
@@ -78,7 +79,8 @@ function fullContent(r: FeedRow, aihot: string): string | null {
       html += `<blockquote><p>引用 @${escapeXml(x.quoted.handle)}：</p>${textToHtml(x.quoted.translation ?? x.quoted.text)}${x.quoted.url ? `<p><a href="${escapeXml(x.quoted.url)}">${escapeXml(x.quoted.url)}</a></p>` : ""}</blockquote>`;
     }
   } else if (r.body_html) {
-    html = r.language !== "zh" && r.tr_html && r.tr_complete ? r.tr_html : r.body_html;
+    const translated = !!(r.language !== "zh" && r.tr_html && r.tr_complete);
+    html = licensedBody(translated ? r.tr_html! : r.body_html, r.source_id ?? "", r.url, translated);
   }
   if (!html) return null;
   return `${proxyBodyImages(html, true, FEED_IMAGE_SECONDS)}<p>—— 本文由 ${escapeXml(SITE.name)} 聚合整理，完整版与更多动态见 <a href="${aihot}">${aihot}</a></p>`;
@@ -124,7 +126,7 @@ export async function itemFeed(kind: ItemFeedKind, category: PublicApiCategoryKe
       ORDER BY coalesce(p.published_at, p.discovered_at) DESC, p.article_id DESC LIMIT 50
     )
     SELECT p.article_id AS id, p.title, p.summary, p.url, p.category, p.published_at, p.discovered_at, s.name AS source_name
-      ${includeContent ? sql`, p.channel, p.syndicate, a.language, a.x_post,
+      ${includeContent ? sql`, s.id AS source_id, p.channel, p.syndicate, a.language, a.x_post,
         CASE WHEN p.channel = 'x' THEN tr.body_text END AS zh_text, qt.text_zh AS quoted_zh,
         a.body_html, tr.body_html AS tr_html, tr.complete AS tr_complete` : sql``}
     FROM page JOIN publications p ON p.article_id = page.article_id JOIN sources s ON s.id = p.source_id
