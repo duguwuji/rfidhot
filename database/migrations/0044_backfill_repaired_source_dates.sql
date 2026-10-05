@@ -8,7 +8,7 @@
 CREATE TEMP TABLE repaired_source_dates ON COMMIT DROP AS
 WITH datelines AS (
   SELECT a.id, (regexp_match(left(a.body_text, 2000),
-    '(?:MENTOR|GLENDALE|MIAMISBURG|GREENWOOD VILLAGE|KUNSHAN|SHANGHAI|SAN FRANCISCO|ANYANG|OEGSTGEEST|NEW YORK CITY|DÜSSELDORF|IMM COLOGNE|SÃO PAULO)[[:alpha:][:space:],/().–—-]{0,80}((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4})[[:space:]]*[:),–—-]', 'i'))[1] AS dateline
+    '(?:MENTOR|GLENDALE|MIAMISBURG|GREENWOOD VILLAGE|KUNSHAN|SHANGHAI|SAN FRANCISCO|ANYANG|OEGSTGEEST|NEW YORK CITY|DÜSSELDORF|IMM COLOGNE|SÃO PAULO)[[:alpha:][:space:],/().–—-]{0,80}((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4}|\d{1,2}(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December),?\s+\d{4})[[:space:]]*[:),–—-]', 'i'))[1] AS dateline
   FROM articles a JOIN sources s ON s.id = a.source_id
   WHERE a.source_id = 'web-avery-rfid' AND a.published_at IS NULL
     AND s.kind = 'web_list'
@@ -16,8 +16,8 @@ WITH datelines AS (
     AND s.config->>'publishedAtUtcOffset' = '+00:00'
 ), parts AS (
   SELECT id,
-    regexp_match(lower(dateline), '^(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2}),?\s+(\d{4})$') AS mf,
-    regexp_match(lower(dateline), '^(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})$') AS df
+    regexp_match(lower(dateline), '^(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})$') AS mf,
+    regexp_match(lower(dateline), '^(\d{1,2})(?:st|nd|rd|th)?\s+(january|february|march|april|may|june|july|august|september|october|november|december),?\s+(\d{4})$') AS df
   FROM datelines WHERE dateline IS NOT NULL
 ), numbered AS (
   SELECT id,

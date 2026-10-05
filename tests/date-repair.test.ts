@@ -163,6 +163,9 @@ test("0044 repairs verified stored datelines, skips invalid/narrative/month-only
   const samples: Array<[string, string | null]> = [
     ["Headline GLENDALE, Calif. – March 02, 2020, Avery Dennison announces RFID.", "2020-03-02"],
     ["Oegstgeest, NL 20 October 2022: RFID launch.", "2022-10-20"],
+    ["Düsseldorf, November 21th 2022 - payfree provides RFID checkout.", "2022-11-21"],
+    ["MENTOR, Ohio, 25th June, 2025 — Recyclable RFID release.", "2025-06-25"],
+    ["GLENDALE, Calif. – 23 September, 2021, RFID release.", "2021-09-23"],
     ["SÃO PAULO, APRIL 6, 2022, Avery Dennison announces RFID.", "2022-04-06"],
     ["MENTOR, OH – February 29, 2024 — Leap-day release.", "2024-02-29"],
     ["MENTOR, OH – February 31, 2024 — Invalid day.", null],
