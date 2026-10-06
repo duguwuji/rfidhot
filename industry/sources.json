@@ -1,5 +1,5 @@
 {
-  "$comment": "RFID 信源：官网和原始公告优先，媒体补充；默认仅摘要与链接。已存在信源不被 seed 覆盖。GS1、Walmart、3GPP 暂停，详情见 docs/rfid.md。",
+  "$comment": "RFID 信源：官网和原始公告优先，媒体补充；按使用者要求，当前部署启用的编辑信源开放网站全文。已存在信源不被 seed 覆盖，详情见 docs/rfid.md 和 docs/fulltext.md。",
   "sources": [
     {
       "id": "web-impinj-news",
@@ -33,7 +33,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -69,7 +69,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -111,7 +111,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -148,7 +148,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -185,7 +185,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -225,7 +225,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -262,7 +262,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -296,7 +296,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -336,7 +336,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -376,7 +376,7 @@
       "tags": [
         "会员新闻"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -443,7 +443,7 @@
       "tags": [
         "媒体"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -478,7 +478,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -547,7 +547,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -580,7 +580,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": false
     },
@@ -602,7 +602,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -624,7 +624,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -647,7 +647,7 @@
         "机构资讯",
         "会员新闻"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -673,7 +673,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -708,7 +708,7 @@
       "tags": [
         "媒体"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -740,7 +740,7 @@
       "tags": [
         "媒体"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -813,7 +813,7 @@
         "DPP",
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -855,7 +855,7 @@
         "DPP",
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -893,7 +893,7 @@
         "DPP",
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -916,7 +916,7 @@
         "DPP",
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -951,7 +951,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -986,7 +986,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -1015,7 +1015,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -1038,7 +1038,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -1076,7 +1076,7 @@
       "tags": [
         "官方"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     },
@@ -1111,7 +1111,7 @@
       "tags": [
         "行业媒体"
       ],
-      "site_fulltext": false,
+      "site_fulltext": true,
       "syndicate_fulltext": false,
       "enabled": true
     }

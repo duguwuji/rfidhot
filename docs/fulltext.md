@@ -13,4 +13,8 @@
 - [数字电池护照准备指南，2026-08-21](https://single-market-economy.ec.europa.eu/news/guidance-support-preparations-digital-batteries-passport-2026-08-21_en)
 - [数字产品护照注册系统上线，2026-07-20](https://single-market-economy.ec.europa.eu/news/digital-product-passport-registry-now-live-2026-07-20_en)
 
-Impinj、Avery Dennison、行业媒体等来源尚无经核验的全文许可，继续使用摘要和原文入口。新增许可需记录证据并核对转载范围；公开网站的访问权限、新闻稿或软件开源许可本身不代表允许转载新闻全文。
+## 本站的全文开关设置
+
+2026-10-06 使用者明确要求“打开所有可用信源全文开关”。本部署据此为所有当前启用、参与编辑的信源开启 `site_fulltext`；应用时为 31 个，其中 3GPP 已在现有数据库启用。行业包保留原有的采集启停设置，网站全文预设与当前部署名单对应。既有数据库通过管理员信源更新函数逐项修改并记录该操作要求，worker 随后重建公开投影、补译已有精选。
+
+网站开关设置与版权许可记录分别保存：除上述欧盟来源外，不把这次使用者的设置要求标成已核验的来源许可，也不添加 Creative Commons 声明。正文保留来源及原文入口，中文翻译沿用 AI 翻译标记。RSS/API 全文再分发不随网站开关开放。
