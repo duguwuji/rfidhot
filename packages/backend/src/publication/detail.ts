@@ -89,7 +89,7 @@ export async function loadItemDetail(id: string, now = new Date()): Promise<Deta
       zhKind: summary.x?.translation ? "translation" : null,
       complete: true,
     };
-  } else if (row.body_mode === "full" && row.body_html) {
+  } else if (row.selected && row.body_mode === "full" && row.body_html) {
     const isZh = row.language === "zh" || (/[一-鿿]/.test(row.body_text?.slice(0, 400) ?? "") && row.language !== "en");
     const originalHtml = licensedBody(row.body_html, row.source_id, row.url, false);
     if (originalHtml) {
@@ -150,10 +150,10 @@ export async function loadItemDetail(id: string, now = new Date()): Promise<Deta
  * (a summary, the post, or a full-text body).
  */
 export function markdownAvailable(row: {
-  visibility: string; source_mode: string; summary: string | null; body_mode: string; body_html?: string | null; channel: string; x_post: Record<string, any> | null;
+  visibility: string; source_mode: string; summary: string | null; selected: boolean; body_mode: string; body_html?: string | null; channel: string; x_post: Record<string, any> | null;
 }): boolean {
   if (row.visibility !== "public" || !hasItemPage({ visibility: row.visibility, sourceMode: row.source_mode })) return false;
-  return !!row.summary || (row.channel === "x" && !!row.x_post?.text) || (row.body_mode === "full" && !!row.body_html);
+  return !!row.summary || (row.channel === "x" && !!row.x_post?.text) || (row.selected && row.body_mode === "full" && !!row.body_html);
 }
 
 const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced", bulletListMarker: "-" });
@@ -176,7 +176,7 @@ export async function exportMarkdown(id: string): Promise<{ filename: string; bo
     const q = row.x_post.quoted as { handle?: string; text?: string; url?: string } | null | undefined;
     if (q?.text) lines.push(`## 引用 @${q.handle ?? ""}`, "", ...String(q.text).split("\n").map((l) => `> ${l}`), "", ...(q.url ? [q.url, ""] : []));
     if (q?.text && row.quoted_zh) lines.push("### 引用中文译文", "", ...row.quoted_zh.split("\n").map((l) => `> ${l}`), "");
-  } else if (row.body_mode === "full" && row.body_html) {
+  } else if (row.selected && row.body_mode === "full" && row.body_html) {
     const isZh = row.language === "zh";
     const original = licensedBody(row.body_html, row.source_id, row.url, false);
     const translated = row.tr_html && row.tr_complete ? licensedBody(row.tr_html, row.source_id, row.url, true) : null;

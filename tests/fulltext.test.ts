@@ -70,3 +70,41 @@ test("a licensed source cannot expose full text outside its verified URL scope",
   const md = (await app.inject(`/items/${id}/markdown`)).body;
   assert.ok(!md.includes(`中文完整正文 ${T}`) && !md.includes(`Original licensed body ${T}`));
 });
+
+test("deselecting news hides existing translations and originals from reading and exports", async () => {
+  const url = `https://single-market-economy.ec.europa.eu/news/selection-${T}_en`;
+  const id = await article(url);
+  await sql`UPDATE analyses SET selected = false WHERE article_id = ${id}`;
+  await publishArticle(id);
+  for (const suffix of ["", "/original"]) {
+    const res = await app.inject(`/api/site/items/${id}${suffix}`);
+    assert.equal(res.statusCode, 200);
+    const detail = JSON.parse(res.body);
+    assert.equal(detail.selected, false);
+    assert.equal(detail.summary, "摘要");
+    assert.equal(detail.links.original, url);
+    assert.equal(detail.body, null);
+    assert.equal(detail.hasTranslation, false);
+    assert.deepEqual(detail.outline, []);
+  }
+  const md = await app.inject(`/items/${id}/markdown`);
+  assert.equal(md.statusCode, 200, "the summary can still be exported");
+  assert.ok(md.body.includes("摘要") && md.body.includes(url));
+  assert.ok(!md.body.includes(`中文完整正文 ${T}`) && !md.body.includes(`Original licensed body ${T}`));
+
+  await sql`UPDATE analyses SET selected = true WHERE article_id = ${id}`;
+  await publishArticle(id, { releasedAt: new Date(Date.now() - 60_000) });
+  const restored = JSON.parse((await app.inject(`/api/site/items/${id}`)).body);
+  assert.ok(restored.body.zh.includes(`中文完整正文 ${T}`), "reselection reuses the saved translation");
+});
+
+test("unselected Chinese originals also remain summary-only", async () => {
+  const id = await article(`https://single-market-economy.ec.europa.eu/news/chinese-${T}_en`);
+  await sql`UPDATE articles SET language = 'zh', body_html = '<p>中文原文全文</p>', body_text = '中文原文全文' WHERE id = ${id}`;
+  await sql`UPDATE analyses SET selected = false WHERE article_id = ${id}`;
+  await publishArticle(id);
+  const detail = JSON.parse((await app.inject(`/api/site/items/${id}`)).body);
+  assert.equal(detail.body, null);
+  const md = (await app.inject(`/items/${id}/markdown`)).body;
+  assert.ok(!md.includes("中文原文全文") && !md.includes(`中文完整正文 ${T}`));
+});

@@ -200,8 +200,8 @@ test("item pages follow the live rule: unsummarised editorial items keep one, ho
   const page = await get(`/api/site/items/${plain}`);
   assert.equal(page.status, 200, "an unsummarised editorial item keeps its page");
   const detail = JSON.parse(page.body) as { summary: string | null; indexable: boolean; markdownAvailable: boolean };
-  assert.deepEqual([detail.summary, detail.indexable, detail.markdownAvailable], [null, false, true], "noindex, with its body for export");
-  assert.equal((await get(`/items/${plain}/markdown`)).status, 200);
+  assert.deepEqual([detail.summary, detail.indexable, detail.markdownAvailable], [null, false, false], "noindex, with no unselected body to export");
+  assert.equal((await get(`/items/${plain}/markdown`)).status, 404);
   assert.equal((await get(`/api/site/items/${signal}`)).status, 404, "hot_signal material has no page");
   assert.equal((await get(`/items/${signal}/markdown`)).status, 404);
 
