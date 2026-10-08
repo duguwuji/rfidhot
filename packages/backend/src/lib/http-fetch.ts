@@ -68,22 +68,38 @@ export async function guardedFetch(input: string, opts: GuardedFetchOptions = {}
     assertPublicUrl(target, config.allowPrivateNetworkFetch, proxied(new URL(target), route)), signal,
   );
   let url = await check(input);
+  let method = (opts.method ?? "GET").toUpperCase();
+  let requestBody = opts.body;
+  const headers: Record<string, string> = { "user-agent": DEFAULT_UA, "accept-language": "zh-CN,zh;q=0.9,en;q=0.8" };
+  for (const [name, value] of Object.entries(opts.headers ?? {})) headers[name.toLowerCase()] = value;
   const maxRedirects = opts.maxRedirects ?? 5;
   const maxBytes = opts.maxBytes ?? 8 * 1024 * 1024;
   for (let hop = 0; ; hop++) {
     const res = await undiciFetch(url, {
-      method: opts.method ?? "GET",
-      headers: { "user-agent": DEFAULT_UA, "accept-language": "zh-CN,zh;q=0.9,en;q=0.8", ...(opts.headers ?? {}) },
-      body: opts.body,
+      method,
+      headers,
+      body: requestBody,
       redirect: "manual",
       dispatcher: dispatcherFor(proxied(url, route)),
       signal,
     });
-    if (res.status >= 300 && res.status < 400 && res.headers.get("location")) {
+    if ([301, 302, 303, 307, 308].includes(res.status) && res.headers.get("location")) {
       // Release the connection even when the next URL is refused or the redirect limit is reached.
       await res.body?.cancel();
       if (hop >= maxRedirects) throw new Error(`Too many redirects for ${input}`);
-      url = await check(new URL(res.headers.get("location")!, url).toString());
+      const next = new URL(res.headers.get("location")!, url);
+      if (url.protocol === "https:" && next.protocol !== "https:") throw new Error("Refusing HTTPS redirect downgrade");
+      if (next.origin !== url.origin && ["authorization", "cookie", "proxy-authorization"].some((name) => headers[name] !== undefined)) {
+        throw new Error("Refusing cross-origin redirect with credentials");
+      }
+      if ((res.status === 303 && method !== "HEAD") || ([301, 302].includes(res.status) && method === "POST")) {
+        method = "GET";
+        requestBody = undefined;
+        delete headers["content-type"];
+        delete headers["content-length"];
+      }
+      if (next.origin !== url.origin && requestBody !== undefined) throw new Error("Refusing cross-origin redirect with a request body");
+      url = await check(next.toString());
       continue;
     }
     const chunks: Buffer[] = [];

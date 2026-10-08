@@ -11,6 +11,7 @@ import type { AnyNode, Element } from "domhandler";
 import { z } from "zod";
 import { sql } from "../db.ts";
 import { sanitizeBody, textToHtml } from "../content/sanitize.ts";
+import { isChinese } from "../content/language.ts";
 import { chatJson } from "../providers/llm.ts";
 import { collapseWhitespace } from "../lib/text.ts";
 import { sha256 } from "../lib/ids.ts";
@@ -44,8 +45,6 @@ export interface TranslateResult {
   segments?: number;
   reason?: string;
 }
-
-const isChinese = (language: string | null, sample: string) => language === "zh" || (/[一-鿿]/.test(sample.slice(0, 400)) && language !== "en");
 
 /** Leaf text blocks of a sanitised body, in document order, skipping code. */
 function segmentsOf($: cheerio.CheerioAPI): Element[] {

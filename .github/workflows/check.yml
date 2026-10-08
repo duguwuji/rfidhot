@@ -44,6 +44,10 @@ jobs:
 
       - name: Install
         run: npm ci --no-audit --no-fund
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=moderate
+      - name: Native media runtime
+        run: node scripts/check-media-runtime.ts
       - name: Typecheck
         run: npm run typecheck
       - name: Build web
@@ -90,6 +94,8 @@ jobs:
           echo "MCP_ALLOWED_HOSTS=web" >> .env
       - name: Build and start with docker compose
         run: docker compose up -d --build
+      - name: Native media runtime in the shipped image
+        run: docker compose run --rm --no-deps --entrypoint node setup scripts/check-media-runtime.ts
       - name: Smoke check
         run: |
           for i in $(seq 1 90); do curl -fsS -o /dev/null http://127.0.0.1:3000/api/health 2>/dev/null && break; sleep 2; done

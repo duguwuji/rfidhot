@@ -9,6 +9,7 @@
 //      topics and the event grouping need; it runs beside the scoring.
 // Material with only a title or a feed summary has its article page fetched before it is judged.
 import { z } from "zod";
+import { ANALYSIS_PURPOSES } from "./purposes.ts";
 import { CATEGORY_KEYS } from "@rfidhot/contracts/taxonomy";
 import { CATEGORIES } from "@rfidhot/industry/taxonomy";
 import { SELECTION } from "@rfidhot/industry/selection";
@@ -196,7 +197,7 @@ async function runPrefilter(a: AnalyzeInputArticle, opts: StepOpts): Promise<Ana
   checkAnalysisRunning();
   const res = await chatJson({
     model,
-    purpose: "prefilter_article",
+    purpose: ANALYSIS_PURPOSES.prefilter,
     subject: subjectOf(a),
     promptVersion: PROMPT_VERSIONS.prefilter,
     system: PREFILTER_SYSTEM,
@@ -223,7 +224,7 @@ async function runScores(a: AnalyzeInputArticle, threshold: number, opts: StepOp
     checkAnalysisRunning();
     try {
       const res = await chatJson({
-        model, purpose: "score_article", subject: subjectOf(a), promptVersion: PROMPT_VERSIONS.score, system: SCORE_SYSTEM, user: input,
+        model, purpose: ANALYSIS_PURPOSES.score, subject: subjectOf(a), promptVersion: PROMPT_VERSIONS.score, system: SCORE_SYSTEM, user: input,
         schema: ScoreSchema, temperature: call.temperature, maxTokens: call.maxTokens, timeoutMs: call.timeoutMs,
         // Each call is its own paid request; an explicit re-evaluation gets new ones.
         attemptTag: tagged(opts.attemptTag, `score-${i + 1}`),
@@ -245,7 +246,7 @@ async function runStructure(a: AnalyzeInputArticle, opts: StepOpts): Promise<Non
   checkAnalysisRunning();
   const res = await chatJson({
     model,
-    purpose: "structure_article",
+    purpose: ANALYSIS_PURPOSES.structure,
     subject: subjectOf(a),
     promptVersion: PROMPT_VERSIONS.structure,
     system: STRUCTURE_SYSTEM,
@@ -266,7 +267,7 @@ async function runUnderstand(a: AnalyzeInputArticle, opts: StepOpts): Promise<An
   const call = (image: ContentPart | null) => {
     checkAnalysisRunning();
     return chatJson({
-      model, purpose: "understand_article", subject: subjectOf(a), promptVersion: PROMPT_VERSIONS.understand, system: UNDERSTAND_SYSTEM,
+      model, purpose: ANALYSIS_PURPOSES.understand, subject: subjectOf(a), promptVersion: PROMPT_VERSIONS.understand, system: UNDERSTAND_SYSTEM,
       user: image ? [{ type: "text", text }, image] : text, schema: UnderstandSchema, temperature: 0.2, maxTokens: 16_384,
       timeoutMs: 180_000, attemptTag: tagged(opts.attemptTag, "understand"),
     });
@@ -310,7 +311,7 @@ async function runSummarize(a: AnalyzeInputArticle, opts: StepOpts): Promise<Non
   checkAnalysisRunning();
   const res = await chatJson({
     model,
-    purpose: "summarize_article",
+    purpose: ANALYSIS_PURPOSES.summarize,
     subject: subjectOf(a),
     promptVersion: PROMPT_VERSIONS.summarize,
     system: "",

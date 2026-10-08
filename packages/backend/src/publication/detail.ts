@@ -4,6 +4,7 @@ import TurndownService from "turndown";
 import { sql } from "../db.ts";
 import { proxyBodyImages } from "../media/imgproxy.ts";
 import { textToHtml } from "../content/sanitize.ts";
+import { isChinese } from "../content/language.ts";
 import { ITEM_COLUMNS, ITEM_FROM, selectedCondition, toItemSummary, xView, type ItemRow } from "./items.ts";
 import { itemUrl } from "./links.ts";
 import { hasItemPage } from "./rules.ts";
@@ -90,7 +91,7 @@ export async function loadItemDetail(id: string, now = new Date()): Promise<Deta
       complete: true,
     };
   } else if (row.selected && row.body_mode === "full" && row.body_html) {
-    const isZh = row.language === "zh" || (/[一-鿿]/.test(row.body_text?.slice(0, 400) ?? "") && row.language !== "en");
+    const isZh = isChinese(row.language, row.body_text ?? "");
     const originalHtml = licensedBody(row.body_html, row.source_id, row.url, false);
     if (originalHtml) {
       const original = proxyBodyImages(originalHtml);
@@ -177,7 +178,7 @@ export async function exportMarkdown(id: string): Promise<{ filename: string; bo
     if (q?.text) lines.push(`## 引用 @${q.handle ?? ""}`, "", ...String(q.text).split("\n").map((l) => `> ${l}`), "", ...(q.url ? [q.url, ""] : []));
     if (q?.text && row.quoted_zh) lines.push("### 引用中文译文", "", ...row.quoted_zh.split("\n").map((l) => `> ${l}`), "");
   } else if (row.selected && row.body_mode === "full" && row.body_html) {
-    const isZh = row.language === "zh";
+    const isZh = isChinese(row.language, row.body_text ?? "");
     const original = licensedBody(row.body_html, row.source_id, row.url, false);
     const translated = row.tr_html && row.tr_complete ? licensedBody(row.tr_html, row.source_id, row.url, true) : null;
     if (!isZh && translated) lines.push("## 正文 · 中文译文", "", turndown.turndown(translated), "");

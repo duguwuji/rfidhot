@@ -91,6 +91,7 @@ Content-Type: application/json
 ```
 
 - `INGEST_TOKEN` 在 `.env` 里设置，至少 16 位；不设置时接口一律返回 401。
+- 同时设置 `INGEST_SOURCE_IDS=my-crawler,other-crawler`，列出该 token 可以写入的信源 ID；留空或提交其他 ID 返回 403。该接口只接受 `external` 且启用的信源，不能冒用 RSS、网页等官方采集来源。已有脚本更新部署前需补上这个名单。
 - 每次最多 50 条；每个客户端每分钟最多 10 次。
 - 返回 `{"ok": true, "created": <新建条数>}`。缺标题或网址的条目会被跳过，同一请求里重复的网址只取第一条。
 - `sourceId` 不存在时会自动建一个 `external` 信源，默认不进公开页面：到后台把它的参与方式改成 `editorial` 才会出现在站上。

@@ -3,7 +3,7 @@
 // Development may impersonate an admin with DEV_AUTH_ROLE=admin; production refuses to start with it.
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { config, credential } from "../config.ts";
-import { sql } from "../db.ts";
+import { sql, type Db } from "../db.ts";
 import { sha256 } from "../lib/ids.ts";
 
 export const SESSION_COOKIE = "aihot_admin";
@@ -173,10 +173,10 @@ export async function endSession(cookieHeader: string | undefined) {
 }
 
 /** Every manual change: who, when, what, why. */
-export async function audit(actor: string, action: string, subject: string | null, reason: string | null, before: unknown, after: unknown, requestId?: string) {
-  await sql`INSERT INTO audit_log (actor, action, subject, reason, before, after, request_id)
-            VALUES (${actor}, ${action}, ${subject}, ${reason}, ${before === null || before === undefined ? null : sql.json(before as never)},
-                    ${after === null || after === undefined ? null : sql.json(after as never)}, ${requestId ?? null})`;
+export async function audit(actor: string, action: string, subject: string | null, reason: string | null, before: unknown, after: unknown, requestId?: string, db: Db = sql) {
+  await db`INSERT INTO audit_log (actor, action, subject, reason, before, after, request_id)
+            VALUES (${actor}, ${action}, ${subject}, ${reason}, ${before === null || before === undefined ? null : db.json(before as never)},
+                    ${after === null || after === undefined ? null : db.json(after as never)}, ${requestId ?? null})`;
 }
 
 export function actorOf(p: AdminPrincipal): string {

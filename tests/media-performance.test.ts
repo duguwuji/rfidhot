@@ -13,9 +13,24 @@ process.env.ALLOW_PRIVATE_NETWORK_FETCH = "true";
 process.env.MODEL_CALLS_ENABLED = "false";
 const { guardedFetch } = await import("@rfidhot/backend/lib/http-fetch");
 const { produceImage } = await import("@rfidhot/backend/media/images");
+const { resizeImage } = await import("@rfidhot/backend/media/images");
 const { renderOg } = await import("../apps/api/src/og/render.ts");
 const { renderPoster } = await import("../apps/api/src/og/poster.ts");
 const { xView } = await import("@rfidhot/backend/publication/items");
+
+test("patched SVG decoding retains small vectors and rasterizes avatars and large vectors", async () => {
+  const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1000"><rect width="2000" height="1000" fill="red"/></svg>');
+  const small = await resizeImage(svg, "image/svg+xml", "full");
+  assert.equal(small.type, "image/svg+xml");
+  assert.deepEqual(small.body, svg);
+  const avatar = await resizeImage(svg, "image/svg+xml", "avatar-48");
+  assert.equal(avatar.type, "image/webp");
+  assert.equal((await sharp(avatar.body).metadata()).width, 48);
+  const large = Buffer.from(svg.toString().replace('</svg>', `<!--${"x".repeat(130 * 1024)}--></svg>`));
+  const full = await resizeImage(large, "image/svg+xml", "full");
+  assert.equal(full.type, "image/webp");
+  assert.equal((await sharp(full.body).metadata()).width, 1600);
+});
 
 let imageHits = 0;
 let failureHits = 0;

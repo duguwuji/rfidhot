@@ -10,6 +10,10 @@
   "engines": {
     "node": ">=24.11"
   },
+  "overrides": {
+    "fflate": "0.7.5",
+    "source-map-js": "1.2.2"
+  },
   "scripts": {
     "db:migrate": "node --env-file-if-exists=.env scripts/migrate.ts",
     "dev:api": "npm run dev -w @rfidhot/api",
