@@ -1,4 +1,4 @@
-import { COLLECTION_INTERVAL_MINUTES } from "@rfidhot/industry/collection";
+import { COLLECTION_INTERVAL_MINUTES, COLLECTION_LABEL } from "@rfidhot/industry/collection";
 import { SITE } from "@rfidhot/industry/site";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
@@ -67,8 +67,8 @@ export default function NewSource() {
                 {Object.entries(KIND_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </Select>
             </Field>
-            <Field label="采集间隔（分钟）">
-              <Input type="number" min={1} max={1440} value={form.interval_minutes} onChange={(e) => setForm({ ...form, interval_minutes: Number(e.target.value) })} />
+            <Field label="自动采集时间">
+              <Input value={form.kind === "external" ? "仅接收推送" : COLLECTION_LABEL} readOnly />
             </Field>
             <Field label="参与方式">
               <Select value={form.participation_mode} onChange={(e) => setForm({ ...form, participation_mode: e.target.value })}>

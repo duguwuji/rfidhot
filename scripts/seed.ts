@@ -2,7 +2,7 @@
 // demo sources (industry/sources.json, only the ones not there yet, so admin edits are never undone) and,
 // with the leaderboard on, its model directory (only models and names not there yet).
 // Re-runnable:  node --env-file=.env scripts/seed.ts   (--topics-only: just the topics, as the tests use)
-import { COLLECTION_INTERVAL_MINUTES } from "@rfidhot/industry/collection";
+import { COLLECTION_INTERVAL_MINUTES, nextCollectionAt } from "@rfidhot/industry/collection";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { FEATURES } from "@rfidhot/industry/features";
@@ -42,7 +42,7 @@ for (const s of sources) {
     INSERT INTO sources (id, name, kind, config, tier, first_party, owner_entity_id, participation_mode, interval_minutes, tags, site_fulltext, syndicate_fulltext, enabled, next_fetch_at)
     VALUES (${s.id}, ${s.name}, ${s.kind}, ${sql.json(s.config as never)}, ${s.tier ?? "T2"}, ${s.first_party ?? false}, ${s.owner_entity_id ?? null},
             ${s.participation_mode ?? "editorial"}, ${s.interval_minutes ?? COLLECTION_INTERVAL_MINUTES}, ${s.tags ?? []}, ${s.site_fulltext ?? false}, ${s.syndicate_fulltext ?? false},
-            ${s.enabled ?? true}, now())
+            ${s.enabled ?? true}, ${nextCollectionAt()})
     ON CONFLICT (id) DO NOTHING RETURNING id`;
   added += inserted.length;
 }

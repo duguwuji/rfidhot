@@ -123,7 +123,7 @@ export default function Sources({ loaderData }: Route.ComponentProps) {
               ),
             },
             { key: "ok", label: "上次成功", render: (r) => <Time at={r.last_ok_at} /> },
-            { key: "interval", label: "频率", align: "right", render: (r) => `${r.interval_minutes} 分` },
+            { key: "interval", label: "采集（北京时间）", align: "right", render: (r) => r.kind === "external" ? "推送" : "07:30 / 19:30" },
             { key: "items", label: "7 天条目", align: "right", render: (r) => num(r.items_7d) },
             { key: "sel", label: "30 天精选", align: "right", render: (r) => num(r.selected_30d) },
           ]}

@@ -1,6 +1,6 @@
 // Source administration (F18): list, detail, preview (fetch without storing), edit, create with
 // duplicate checks, pause/resume and manual collection. Every change is audited.
-import { COLLECTION_INTERVAL_MINUTES } from "@rfidhot/industry/collection";
+import { COLLECTION_INTERVAL_MINUTES, nextCollectionAt } from "@rfidhot/industry/collection";
 import { z } from "zod";
 import { sql } from "../db.ts";
 import { enqueue, QUEUES } from "../jobs/queue.ts";
@@ -114,7 +114,7 @@ export async function updateSource(id: string, input: { patch: unknown; version:
     const values = Object.fromEntries(keys.map((k) => [k, k === "config" ? tx.json(patch.config as never) : patch[k]]));
     const [after] = await tx`UPDATE sources SET ${tx(values as never, ...(keys as string[]))}, updated_at = now(),
       health = CASE WHEN ${patch.enabled ?? null}::boolean IS FALSE THEN 'paused' WHEN ${patch.enabled ?? null}::boolean IS TRUE AND health = 'paused' THEN 'unknown' ELSE health END,
-      next_fetch_at = CASE WHEN ${patch.enabled ?? null}::boolean IS TRUE THEN now() ELSE next_fetch_at END
+      next_fetch_at = CASE WHEN ${patch.enabled ?? null}::boolean IS TRUE THEN ${nextCollectionAt()} ELSE next_fetch_at END
       WHERE id = ${id} RETURNING *`;
     await audit(actor, "source.update", `source:${id}`, input.reason ?? null, Object.fromEntries(keys.map((k) => [k, before[k]])), patch);
     // What public exits show for this source's articles is derived from these fields: re-derive them
@@ -177,7 +177,7 @@ export async function createSource(input: unknown, actor: string) {
   const [row] = await sql`
     INSERT INTO sources (id, name, kind, config, tier, participation_mode, interval_minutes, first_party, tags, site_fulltext, syndicate_fulltext, next_fetch_at)
     VALUES (${s.id}, ${s.name}, ${s.kind}, ${sql.json(s.config as never)}, ${s.tier}, ${s.participation_mode}, ${s.interval_minutes}, ${s.first_party}, ${s.tags},
-            ${s.site_fulltext}, ${s.syndicate_fulltext}, now())
+            ${s.site_fulltext}, ${s.syndicate_fulltext}, ${nextCollectionAt()})
     ON CONFLICT (id) DO NOTHING RETURNING *`;
   if (!row) throw new Conflict(`信源 ID ${s.id} 已存在`);
   await audit(actor, "source.create", `source:${s.id}`, null, null, s);
