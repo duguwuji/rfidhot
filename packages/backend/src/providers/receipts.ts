@@ -191,9 +191,12 @@ async function startAttempt(tx: Db, receiptId: number, attempt: number, req: Rec
   return row!.id;
 }
 
-async function markUnknown(tx: Db, receiptId: number, reason: string) {
-  await tx`UPDATE receipts SET status = 'unknown', error = ${reason}, updated_at = now() WHERE id = ${receiptId}`;
+async function markUnknown(tx: Db, receiptId: number, reason: string, cutoff = new Date(Date.now() - PENDING_STALE_MS)) {
+  const rows = await tx`UPDATE receipts SET status = 'unknown', error = ${reason}, updated_at = now()
+                       WHERE id = ${receiptId} AND status = 'pending' AND updated_at < ${cutoff} RETURNING id`;
+  if (!rows.count) return false;
   await tx`UPDATE receipt_attempts SET status = 'unknown', error = ${reason}, finished_at = now() WHERE receipt_id = ${receiptId} AND status = 'pending'`;
+  return true;
 }
 
 /**
@@ -201,9 +204,13 @@ async function markUnknown(tx: Db, receiptId: number, reason: string) {
  * they are released like any other unknown outcome even when nothing retries them.
  */
 export async function markStalePendingReceipts(): Promise<number> {
-  const stale = await sql<{ id: number }[]>`SELECT id FROM receipts WHERE status = 'pending' AND updated_at < ${new Date(Date.now() - PENDING_STALE_MS)}`;
-  for (const r of stale) await sql.begin((tx) => markUnknown(tx, r.id, "placeholder went stale without a recorded result"));
-  return stale.length;
+  const cutoff = new Date(Date.now() - PENDING_STALE_MS);
+  const stale = await sql<{ id: number }[]>`SELECT id FROM receipts WHERE status = 'pending' AND updated_at < ${cutoff}`;
+  let changed = 0;
+  for (const r of stale) {
+    if (await sql.begin((tx) => markUnknown(tx, r.id, "placeholder went stale without a recorded result", cutoff))) changed += 1;
+  }
+  return changed;
 }
 
 export async function completeReceipt(db: Db, receiptId: number): Promise<void> {

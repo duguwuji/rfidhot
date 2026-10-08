@@ -4,6 +4,7 @@ import { sql } from "../db.ts";
 import { audit } from "./auth.ts";
 import { Conflict } from "./sources.ts";
 import { failureGroupSql, queueProcessing, requeueFailed } from "../jobs/content.ts";
+import { isAnalysisPurpose } from "../editorial/purposes.ts";
 
 const STALE_HEARTBEAT_MS = 3 * 60_000;
 
@@ -84,19 +85,25 @@ export async function runsOverview() {
  * processing (one action, not two). Only an unknown receipt is released, once.
  */
 async function release(id: number, error: string, actor: string, note: string, billed: boolean | null) {
-  const [before] = await sql<{ subject: string | null; purpose: string }[]>`
-    UPDATE receipts SET status = 'failed', error = ${error}, updated_at = now() WHERE id = ${id} AND status = 'unknown' RETURNING subject, purpose`;
-  if (!before) return null;
-  await sql`UPDATE receipt_attempts SET status = 'failed', error = ${error} WHERE receipt_id = ${id} AND status = 'unknown'`;
-  const article = before.purpose === "analyze_article" ? /^article:([^@]+)@/.exec(before.subject ?? "")?.[1] : undefined;
-  let requeued = false;
-  if (article) {
-    const [a] = await sql`UPDATE articles SET processing_state = 'new', processing_attempts = 0, processing_retry_at = NULL, processing_error = NULL
-                          WHERE id = ${article} AND processing_state = 'failed' RETURNING id`;
-    if (a) requeued = !!(await queueProcessing(article, { step: "analyze" }));
-  }
-  await audit(actor, "receipt.release", `receipt:${id}`, note, { status: "unknown" }, { status: "failed", billed, requeued });
-  return { id, status: "failed", subject: before.subject, purpose: before.purpose, requeued };
+  return sql.begin(async (tx) => {
+    const [before] = await tx<{ subject: string | null; purpose: string }[]>`
+      SELECT subject, purpose FROM receipts WHERE id = ${id} AND status = 'unknown'`;
+    if (!before) return null;
+    const article = isAnalysisPurpose(before.purpose) ? /^article:([^@]+)@(\d+)$/.exec(before.subject ?? "") : null;
+    // Analysis commits lock the article before completing receipts: recovery takes the same order.
+    if (article) await tx`SELECT id FROM articles WHERE id = ${article[1]!} FOR UPDATE`;
+    const released = await tx`UPDATE receipts SET status = 'failed', error = ${error}, updated_at = now() WHERE id = ${id} AND status = 'unknown' RETURNING id`;
+    if (!released.count) return null;
+    await tx`UPDATE receipt_attempts SET status = 'failed', error = ${error} WHERE receipt_id = ${id} AND status = 'unknown'`;
+    let requeued = false;
+    if (article) {
+      const [a] = await tx`UPDATE articles SET processing_state = 'new', processing_attempts = 0, processing_retry_at = NULL, processing_error = NULL
+                            WHERE id = ${article[1]!} AND revision = ${Number(article[2])} AND processing_state = 'failed' RETURNING id`;
+      if (a) requeued = !!(await queueProcessing(article[1]!, { step: "analyze", db: tx }));
+    }
+    await audit(actor, "receipt.release", `receipt:${id}`, note, { status: "unknown" }, { status: "failed", billed, requeued }, undefined, tx);
+    return { id, status: "failed", subject: before.subject, purpose: before.purpose, requeued };
+  });
 }
 
 /** Admin, after checking the provider's console: records whether it was billed and releases it. */

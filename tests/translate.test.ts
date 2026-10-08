@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { closeDb, sql } from "@rfidhot/backend/db";
 import { upsertMaterial } from "@rfidhot/backend/content/materials";
-import { translatePending } from "@rfidhot/backend/editorial/translate";
+import { translateArticle, translatePending } from "@rfidhot/backend/editorial/translate";
 import { stopBoss } from "@rfidhot/backend/jobs/queue";
 import { publishArticle } from "@rfidhot/backend/publication/publish";
 import { buildApp } from "../apps/api/src/app.ts";
@@ -65,6 +65,41 @@ after(async () => {
   await provider.close();
   await stopBoss();
   await closeDb();
+});
+
+test("Japanese and unknown English with Han names receive Chinese translations, not Chinese labels", async () => {
+  for (const [language, text] of [["ja", "新製品を発売しました。"], [null, "Impinj announced a partnership with 中国移动 today."]] as const) {
+    const { articleId: id } = await upsertMaterial({ sourceId: SOURCE, url: `https://example.com/language-${tag()}`, title: `Language ${tag()}`,
+      language, bodyHtml: `<p>${text}</p>`, bodyText: text, bodyStatus: "ok", via: "fetch" });
+    await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
+              VALUES (${id}, 1, 'rule', 'pass', 'technology', '多语全文', '摘要', '理由', 90, true)`;
+    await publishArticle(id, { releasedAt: new Date(Date.now() - 60_000) });
+    assert.equal((await detail(id)).body.zh, null, "untranslated original is not labelled Chinese");
+    const hits = provider.hits();
+    assert.equal((await translateArticle(id)).status, "translated");
+    assert.ok(provider.hits() > hits);
+    const translated = await detail(id);
+    assert.ok(translated.body.zh?.includes("译文"));
+    assert.equal(translated.body.complete, true);
+    const original = await app.inject({ method: "GET", url: `/api/site/items/${id}?original=1` });
+    assert.equal(original.statusCode, 200);
+    assert.equal(provider.hits(), hits + 1, "page reads never translate");
+  }
+});
+
+test("Chinese BCP47 variants skip models and expose their original body as Chinese", async () => {
+  for (const language of ["zh-CN", "zh-TW", "zh_Hant"]) {
+    const text = "射频识别产业正在不断发展。";
+    const { articleId: id } = await upsertMaterial({ sourceId: SOURCE, url: `https://example.com/chinese-${tag()}`, title: `中文 ${tag()}`,
+      language, bodyHtml: `<p>${text}</p>`, bodyText: text, bodyStatus: "ok", via: "fetch" });
+    await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
+              VALUES (${id}, 1, 'rule', 'pass', 'technology', '中文全文', '摘要', '理由', 90, true)`;
+    await publishArticle(id, { releasedAt: new Date(Date.now() - 60_000) });
+    const hits = provider.hits();
+    assert.equal((await translateArticle(id)).status, "skipped");
+    assert.equal(provider.hits(), hits);
+    assert.ok((await detail(id)).body.zh?.includes(text));
+  }
 });
 
 test("a text corrected while its translation was running is translated again, and the old translation is not shown", async () => {

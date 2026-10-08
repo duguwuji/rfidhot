@@ -20,6 +20,7 @@ import { dailyRetention } from "@rfidhot/backend/operations/retention";
 import { submitIndexNow } from "@rfidhot/backend/operations/indexnow";
 import { checkAlerts, sendDigest } from "@rfidhot/backend/operations/alerts";
 import { autoReleaseUnknownReceipts } from "@rfidhot/backend/admin/runs";
+import { reconcileVisibilityOverrides } from "@rfidhot/backend/admin/content";
 import { forwardPendingFeedback } from "@rfidhot/backend/operations/feedback";
 import { backupConfigured, runBackup } from "@rfidhot/backend/operations/backup";
 import { sourceHealthWeekly } from "@rfidhot/backend/operations/reports";
@@ -64,7 +65,8 @@ export const SCHEDULES: Scheduled[] = [
   {
     name: "ops.recover",
     cron: "*/10 * * * *",
-    run: async () => ({ receipts: await markStalePendingReceipts(), released: await autoReleaseUnknownReceipts(), deliveries: await markStaleDeliveries() }),
+    run: async () => ({ receipts: await markStalePendingReceipts(), released: await autoReleaseUnknownReceipts(),
+      publications: await reconcileVisibilityOverrides(), deliveries: await markStaleDeliveries() }),
   },
   { name: "ops.alerts", cron: "*/10 * * * *", run: () => checkAlerts() },
   // One message with the follow-ups that do not touch readers (nothing when there are none).

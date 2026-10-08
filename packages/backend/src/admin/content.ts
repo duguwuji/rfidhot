@@ -4,11 +4,11 @@
 // overrides with a version check, are re-projected to every public exit, and are audited.
 import { z } from "zod";
 import { ARTICLE_ID_PATTERN, CATEGORY_KEYS } from "@rfidhot/contracts/taxonomy";
-import { sql } from "../db.ts";
+import { sql, type Db } from "../db.ts";
 import { enqueue, QUEUES } from "../jobs/queue.ts";
 import { queueProcessing } from "../jobs/content.ts";
 import { normalizeUrl } from "../lib/url.ts";
-import { publishArticle } from "../publication/publish.ts";
+import { publishArticle, publishArticleTx } from "../publication/publish.ts";
 
 import { computeHotRanking } from "../events/hot.ts";
 import { mergeStoryInto } from "../events/merge.ts";
@@ -72,8 +72,8 @@ async function inHotRanking(id: string): Promise<boolean> {
 
 const STALE = "这条内容的人工设置已被修改，请刷新后再操作";
 
-async function overrideRow(id: string) {
-  const [o] = await sql<{ fields: Record<string, unknown>; visibility: string | null; version: number }[]>`SELECT fields, visibility, version FROM editorial_overrides WHERE article_id = ${id}`;
+async function overrideRow(id: string, db: Db = sql) {
+  const [o] = await db<{ fields: Record<string, unknown>; visibility: string | null; version: number }[]>`SELECT fields, visibility, version FROM editorial_overrides WHERE article_id = ${id}`;
   return o ?? { fields: {}, visibility: null, version: 0 };
 }
 
@@ -83,22 +83,46 @@ async function overrideRow(id: string) {
  */
 export async function setVisibility(id: string, input: { visibility: "public" | "summary-only" | "withdrawn"; reason: string; version: number }, actor: string) {
   if (!input.reason?.trim()) throw new Error("reason is required");
-  const before = await overrideRow(id);
-  if (before.version !== input.version) throw new Conflict(STALE);
-  // The version check and the write are one statement: of two tabs saving the same version, one wins.
-  const written = await sql`
-    INSERT INTO editorial_overrides (article_id, visibility, reason, version, updated_by) VALUES (${id}, ${input.visibility}, ${input.reason}, 1, ${actor})
-    ON CONFLICT (article_id) DO UPDATE SET visibility = EXCLUDED.visibility, reason = EXCLUDED.reason, version = editorial_overrides.version + 1, updated_by = EXCLUDED.updated_by, updated_at = now()
-    WHERE editorial_overrides.version = ${input.version}
-    RETURNING version`;
-  if (!written.count) throw new Conflict(STALE);
-  const published = await publishArticle(id);
+  const { before, published } = await sql.begin(async (tx) => {
+    const before = await overrideRow(id, tx);
+    if (before.version !== input.version) throw new Conflict(STALE);
+    // The version check and the write are one statement: of two tabs saving the same version, one wins.
+    const written = await tx`
+      INSERT INTO editorial_overrides (article_id, visibility, reason, version, updated_by) VALUES (${id}, ${input.visibility}, ${input.reason}, 1, ${actor})
+      ON CONFLICT (article_id) DO UPDATE SET visibility = EXCLUDED.visibility, reason = EXCLUDED.reason, version = editorial_overrides.version + 1, updated_by = EXCLUDED.updated_by, updated_at = now()
+      WHERE editorial_overrides.version = ${input.version}
+      RETURNING version`;
+    if (!written.count) throw new Conflict(STALE);
+    const published = await publishArticleTx(tx, id);
+    await audit(actor, "content.visibility", `content:${id}`, input.reason, { visibility: before.visibility }, { visibility: input.visibility }, undefined, tx);
+    return { before, published };
+  });
   if (published?.reduced || (before.visibility ?? "public") !== input.visibility) {
     // On the hot board the change shows at once, not at the next five-minute ranking.
     if (await inHotRanking(id)) await computeHotRanking();
   }
-  await audit(actor, "content.visibility", `content:${id}`, input.reason, { visibility: before.visibility }, { visibility: input.visibility });
   return published;
+}
+
+/** Repair projection mismatches left by an older process stopping halfway through a visibility write. */
+export async function reconcileVisibilityOverrides(): Promise<{ repaired: number }> {
+  const rows = await sql<{ article_id: string }[]>`
+    SELECT o.article_id FROM editorial_overrides o LEFT JOIN publications p USING (article_id)
+    WHERE o.visibility IS NOT NULL AND o.visibility IS DISTINCT FROM p.visibility
+    ORDER BY o.article_id LIMIT 100`;
+  let repaired = 0;
+  for (const row of rows) {
+    const published = await sql.begin(async (tx) => {
+      const result = await publishArticleTx(tx, row.article_id);
+      if (result) await audit("ops.recover", "content.visibility.reconcile", `content:${row.article_id}`, "修复人工可见性与公开投影不一致", null, result, undefined, tx);
+      return result;
+    });
+    if (published) {
+      repaired += 1;
+      if (await inHotRanking(row.article_id)) await computeHotRanking();
+    }
+  }
+  return { repaired };
 }
 
 /** Marks a detail page for search indexing (sitemap, IndexNow, robots) or removes the mark. */
