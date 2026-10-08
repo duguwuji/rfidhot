@@ -1,11 +1,12 @@
-// Cron-style schedules (Asia/Shanghai). Each run is recorded in job_runs; missed slots run once.
+// Cron-style schedules (Asia/Shanghai). Runs are recorded; only jobs marked once catch up missed slots.
 import type { PgBoss } from "pg-boss";
+import { COLLECTION_CRON } from "@rfidhot/industry/collection";
 import { FEATURES } from "@rfidhot/industry/features";
 import { credential } from "@rfidhot/backend/config";
 import { ensureQueue, recordRun } from "@rfidhot/backend/jobs/queue";
 import { sweepUnprocessed } from "@rfidhot/backend/jobs/content";
 import { translatePending } from "@rfidhot/backend/editorial/translate";
-import { scheduleDueSources } from "@rfidhot/backend/sources/collect";
+import { scheduleCollectionSlot } from "@rfidhot/backend/sources/collect";
 import { scheduleMpReconcile } from "@rfidhot/backend/sources/mp";
 import { refreshSourceIcons } from "@rfidhot/backend/sources/icons";
 import { computeHotRanking, snapshotHeat } from "@rfidhot/backend/events/hot";
@@ -82,9 +83,9 @@ export const SCHEDULES: Scheduled[] = [
     : []),
   ...(collecting
     ? [
-        { name: "sources.schedule", cron: "* * * * *", run: () => scheduleDueSources() },
-        // WeChat official accounts (paid), each once per its interval.
-        { name: "sources.mp-reconcile", cron: "*/15 * * * *", run: () => scheduleMpReconcile() },
+        { name: "sources.schedule", cron: COLLECTION_CRON, run: () => scheduleCollectionSlot() },
+        // WeChat official accounts (paid), using the same fixed slots.
+        { name: "sources.mp-reconcile", cron: COLLECTION_CRON, run: () => scheduleMpReconcile() },
       ]
     : []),
   // Codex reset monitor: checked every minute, scanned every 5 (every 3 while hot). It reads X through

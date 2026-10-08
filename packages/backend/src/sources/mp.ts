@@ -1,5 +1,6 @@
 // WeChat official accounts. Dajiala (极致了, a paid service) supplies each account's latest posts and
-// article bodies; every enabled account is checked once per source interval.
+// article bodies; enabled accounts are checked at the industry's fixed collection slots.
+import { nextCollectionAt } from "@rfidhot/industry/collection";
 import { sql } from "../db.ts";
 import { upsertMaterial } from "../content/materials.ts";
 import { enqueue, QUEUES } from "../jobs/queue.ts";
@@ -106,7 +107,7 @@ export async function checkMpAccount(sourceId: string, reason: "schedule" | "man
     const cursor = { ...(source.cursor ?? {}), lastCheckedAt: new Date().toISOString(), lastPostTime: posts[0]?.post_time ?? source.cursor?.lastPostTime ?? null, remainMoney: history.remainMoney };
     await sql`
       UPDATE sources SET last_fetch_at = now(), last_ok_at = now(), fail_count = 0, last_error = NULL, health = 'ok', cursor = ${sql.json(cursor as never)},
-        next_fetch_at = now() + make_interval(mins => interval_minutes), updated_at = now()
+        next_fetch_at = ${nextCollectionAt()}, updated_at = now()
       WHERE id = ${sourceId}`;
     await sql`UPDATE fetch_runs SET status = 'ok', finished_at = now(), found_count = ${posts.length}, new_count = ${created} WHERE id = ${run!.id}`;
     return { sourceId, status: "ok" as const, found: posts.length, created, reused: history.reused };
@@ -114,7 +115,7 @@ export async function checkMpAccount(sourceId: string, reason: "schedule" | "man
     const message = String(error instanceof Error ? error.message : error).slice(0, 500);
     const soft = error instanceof BudgetExceededError || (error instanceof ProviderRejectedError && error.retryable);
     await sql`
-      UPDATE sources SET last_fetch_at = now(), last_error = ${message},
+      UPDATE sources SET last_fetch_at = now(), last_error = ${message}, next_fetch_at = ${nextCollectionAt()},
         fail_count = CASE WHEN ${soft} THEN fail_count ELSE fail_count + 1 END,
         health = CASE WHEN ${soft} THEN health WHEN fail_count + 1 >= 3 THEN 'failing' ELSE 'degraded' END, updated_at = now()
       WHERE id = ${sourceId}`;
@@ -124,15 +125,14 @@ export async function checkMpAccount(sourceId: string, reason: "schedule" | "man
   }
 }
 
-/** Every enabled account is checked once per its interval (the paid list call is the cost). */
+/** Enabled accounts share the fixed slots; completed or queued accounts wait for the next slot. */
 export async function scheduleMpReconcile(now = new Date()) {
-  const rows = await sql<{ id: string; last: string | null; interval_minutes: number }[]>`
-    SELECT id, cursor->>'lastCheckedAt' AS last, interval_minutes FROM sources WHERE kind = 'mp_account' AND enabled`;
+  const rows = await sql<{ id: string }[]>`
+    SELECT id FROM sources WHERE kind = 'mp_account' AND enabled AND (next_fetch_at IS NULL OR next_fetch_at <= ${now})`;
   let enqueued = 0;
   for (const s of rows) {
-    const since = s.last ? now.getTime() - Date.parse(s.last) : Infinity;
-    if (since <= s.interval_minutes * 60_000) continue;
     await enqueue(QUEUES.mpCheck, { sourceId: s.id, reason: "schedule" }, { singletonKey: `mp:${s.id}` });
+    await sql`UPDATE sources SET next_fetch_at = ${nextCollectionAt(now)} WHERE id = ${s.id}`;
     enqueued += 1;
   }
   return { enqueued };

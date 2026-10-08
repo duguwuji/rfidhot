@@ -1,6 +1,6 @@
 // Collection run for one source: fetch listing → filter → store material → enqueue processing.
 // A failed fetch never advances the success cursor; the source's health reflects consecutive failures.
-import { COLLECTION_INTERVAL_MINUTES } from "@rfidhot/industry/collection";
+import { COLLECTION_INTERVAL_MINUTES, nextCollectionAt } from "@rfidhot/industry/collection";
 import { sql } from "../db.ts";
 import { identityKeyFor, upsertMaterial } from "../content/materials.ts";
 import { enqueue, QUEUES } from "../jobs/queue.ts";
@@ -187,7 +187,7 @@ export async function collectSource(sourceId: string, opts: { force?: boolean } 
     await sql`
       UPDATE sources SET last_fetch_at = now(), last_ok_at = now(), fail_count = 0, last_error = NULL,
         health = 'ok', cursor = ${sql.json(nextCursor as never)}, updated_at = now(),
-        next_fetch_at = now() + make_interval(mins => interval_minutes)
+        next_fetch_at = ${nextCollectionAt()}
       WHERE id = ${sourceId}`;
     await sql`UPDATE fetch_runs SET status = 'ok', finished_at = now(), found_count = ${found}, new_count = ${created},
                 detail = ${detail ? sql.json(detail as never) : null} WHERE id = ${run!.id}`;
@@ -200,7 +200,7 @@ export async function collectSource(sourceId: string, opts: { force?: boolean } 
         fail_count = CASE WHEN ${budget} THEN fail_count ELSE fail_count + 1 END,
         last_error = ${message},
         health = CASE WHEN ${budget} THEN health WHEN fail_count + 1 >= 5 THEN 'failing' ELSE 'degraded' END,
-        next_fetch_at = now() + make_interval(mins => CASE WHEN ${budget} THEN 15 ELSE greatest(interval_minutes, LEAST(interval_minutes * (fail_count + 2), 360)) END),
+        next_fetch_at = ${nextCollectionAt()},
         updated_at = now()
       WHERE id = ${sourceId}`;
     await sql`UPDATE fetch_runs SET status = 'failed', finished_at = now(), found_count = ${found}, new_count = ${created}, error = ${message} WHERE id = ${run!.id}`;
@@ -264,7 +264,7 @@ export async function collectXShard(key: string, sourceIds: string[]): Promise<{
           fail_count = CASE WHEN ${budget} THEN fail_count ELSE fail_count + 1 END,
           last_error = ${message},
           health = CASE WHEN ${budget} THEN health WHEN fail_count + 1 >= 5 THEN 'failing' ELSE 'degraded' END,
-          next_fetch_at = now() + make_interval(mins => CASE WHEN ${budget} THEN 15 ELSE greatest(${minutes}, LEAST(${minutes} * (fail_count + 2), 360)) END),
+          next_fetch_at = ${nextCollectionAt()},
           updated_at = now()
         WHERE id = ${m.id}`;
       await sql`UPDATE fetch_runs SET status = 'failed', finished_at = now(), error = ${message}, detail = ${sql.json({ shard: key, accounts: members.length })} WHERE id = ${runs.get(m.id)!}`;
@@ -288,7 +288,7 @@ export async function collectXShard(key: string, sourceIds: string[]): Promise<{
     await sql`
       UPDATE sources SET last_fetch_at = now(), last_ok_at = now(), fail_count = 0, last_error = NULL,
         health = 'ok', cursor = ${sql.json(cursor as never)}, interval_minutes = ${minutes}, updated_at = now(),
-        next_fetch_at = now() + make_interval(mins => ${minutes})
+        next_fetch_at = ${nextCollectionAt()}
       WHERE id = ${m.id}`;
     await sql`UPDATE fetch_runs SET status = 'ok', finished_at = now(), found_count = ${mine.length}, new_count = ${stored.created},
                 detail = ${sql.json(detail as never)} WHERE id = ${runs.get(m.id)!}`;
@@ -299,7 +299,7 @@ export async function collectXShard(key: string, sourceIds: string[]): Promise<{
 /** X accounts read by shard: a plain query and a watermark (the first fetch of an account is its own). */
 const sharded = () => sql`kind = 'x_search' AND config->>'query' ~* ${SHARDABLE_SQL} AND coalesce(config->>'searchType', 'Latest') = 'Latest' AND cursor->>'lastTweetId' IS NOT NULL`;
 
-/** Every minute: a shard is read when any of its accounts is due, all of them at once. */
+/** At a collection slot: a shard is read when any of its accounts is due. */
 async function scheduleXShards(): Promise<number> {
   const rows = await sql<Array<Pick<SourceRow, "id" | "kind" | "config" | "cursor" | "participation_mode"> & { due: boolean }>>`
     SELECT id, kind, config, cursor, participation_mode, (next_fetch_at IS NULL OR next_fetch_at <= now()) AS due
@@ -309,13 +309,13 @@ async function scheduleXShards(): Promise<number> {
   for (const shard of planXShards(rows)) {
     if (!shard.sourceIds.some((id) => due.has(id))) continue;
     await enqueue(QUEUES.fetchXShard, { key: shard.key, sourceIds: shard.sourceIds }, { singletonKey: shard.key });
-    await sql`UPDATE sources SET next_fetch_at = now() + interval '10 minutes' WHERE id IN ${sql(shard.sourceIds)}`;
+    await sql`UPDATE sources SET next_fetch_at = ${nextCollectionAt()} WHERE id IN ${sql(shard.sourceIds)}`;
     enqueued += 1;
   }
   return enqueued;
 }
 
-/** Every minute: enqueue due sources (enabled, not WeChat/external), oldest due first; X accounts by shard. */
+/** Enqueue one batch of due sources; the slot handler drains all batches. */
 export async function scheduleDueSources(limit = Number(process.env.FETCH_SCHEDULE_BATCH || 40)): Promise<{ enqueued: number; shards: number }> {
   const kinds: string[] = (process.env.COLLECT_KINDS || "rss,web_list,json_list,x_search").split(",");
   // Listings fetched through Jina Reader are paid; development can leave them out.
@@ -327,8 +327,20 @@ export async function scheduleDueSources(limit = Number(process.env.FETCH_SCHEDU
     ORDER BY next_fetch_at NULLS FIRST LIMIT ${limit}`;
   for (const r of rows) {
     await enqueue(QUEUES.fetchSource, { sourceId: r.id }, { singletonKey: r.id });
-    await sql`UPDATE sources SET next_fetch_at = now() + interval '10 minutes' WHERE id = ${r.id}`;
+    await sql`UPDATE sources SET next_fetch_at = ${nextCollectionAt()} WHERE id = ${r.id}`;
   }
   const shards = kinds.includes("x_search") ? await scheduleXShards() : 0;
   return { enqueued: rows.length, shards };
+}
+
+/** A fixed slot must cover every due source, even when there are more than one batch. */
+export async function scheduleCollectionSlot(): Promise<{ enqueued: number; shards: number }> {
+  const total = { enqueued: 0, shards: 0 };
+  let batch;
+  do {
+    batch = await scheduleDueSources();
+    total.enqueued += batch.enqueued;
+    total.shards += batch.shards;
+  } while (batch.enqueued > 0 || batch.shards > 0);
+  return total;
 }

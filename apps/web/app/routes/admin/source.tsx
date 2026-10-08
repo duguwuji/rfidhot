@@ -1,3 +1,4 @@
+import { COLLECTION_LABEL } from "@rfidhot/industry/collection";
 import { SITE } from "@rfidhot/industry/site";
 import { useState } from "react";
 import { Link } from "react-router";
@@ -199,8 +200,8 @@ export default function SourceDetail({ loaderData }: Route.ComponentProps) {
               <Field label="名称">
                 <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
               </Field>
-              <Field label="采集间隔（分钟）">
-                <Input type="number" min={1} max={1440} value={draft.interval_minutes} onChange={(e) => setDraft({ ...draft, interval_minutes: Number(e.target.value) })} />
+              <Field label="自动采集时间">
+                <Input value={s.kind === "external" ? "仅接收推送" : COLLECTION_LABEL} readOnly />
               </Field>
               <Field label="参与方式" hint="氛围只作热点讨论证据，不单独成为内容">
                 <Select value={draft.participation_mode} onChange={(e) => setDraft({ ...draft, participation_mode: e.target.value })}>

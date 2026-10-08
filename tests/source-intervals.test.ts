@@ -6,7 +6,9 @@ import { after, test } from "node:test";
 import { config } from "@rfidhot/backend/config";
 import { closeDb, sql } from "@rfidhot/backend/db";
 import { stopBoss } from "@rfidhot/backend/jobs/queue";
-import { collectSource, scheduleDueSources } from "@rfidhot/backend/sources/collect";
+import { collectSource, scheduleDueSources, scheduleCollectionSlot } from "@rfidhot/backend/sources/collect";
+import { nextCollectionAt } from "@rfidhot/industry/collection";
+import { scheduleMpReconcile } from "@rfidhot/backend/sources/mp";
 import { tag } from "./setup.ts";
 
 const T = tag();
@@ -58,7 +60,7 @@ test("the interval migration reschedules existing collectors without changing ex
   }), (error) => error === rollback);
 });
 
-test("a successful collection waits twelve hours and the minute scheduler does not fetch it early", async () => {
+test("a successful collection aligns to the next fixed slot without an early automatic fetch", async () => {
   const id = `rss-twice-daily-${T}`;
   const [created] = await sql<{ interval_minutes: number }[]>`
     INSERT INTO sources (id, name, kind, config, cursor)
@@ -68,21 +70,78 @@ test("a successful collection waits twelve hours and the minute scheduler does n
   const result = await collectSource(id);
   assert.equal(result.status, "ok");
   const [before] = await sql<{ last_fetch_at: Date; next_fetch_at: Date }[]>`SELECT last_fetch_at, next_fetch_at FROM sources WHERE id = ${id}`;
-  assert.equal(before!.next_fetch_at.getTime() - before!.last_fetch_at.getTime(), 12 * 3600_000);
+  assert.equal(before!.next_fetch_at.getTime(), nextCollectionAt(before!.last_fetch_at).getTime());
   await scheduleDueSources();
   const [after] = await sql<{ next_fetch_at: Date }[]>`SELECT next_fetch_at FROM sources WHERE id = ${id}`;
   assert.equal(after!.next_fetch_at.getTime(), before!.next_fetch_at.getTime());
 });
 
-test("a failed twice-daily collection does not retry before twelve hours", async () => {
+test("a failed collection aligns to the next fixed slot", async () => {
   const id = `rss-twice-daily-failed-${T}`;
   await sql`INSERT INTO sources (id, name, kind, config)
     VALUES (${id}, 'Failed twice-daily RSS', 'rss', ${sql.json({ feedUrl: feedUrl.replace("/feed.xml", "/failed") })})`;
   const result = await collectSource(id);
   assert.equal(result.status, "failed");
   const [before] = await sql<{ last_fetch_at: Date; next_fetch_at: Date }[]>`SELECT last_fetch_at, next_fetch_at FROM sources WHERE id = ${id}`;
-  assert.equal(before!.next_fetch_at.getTime() - before!.last_fetch_at.getTime(), 12 * 3600_000);
+  assert.equal(before!.next_fetch_at.getTime(), nextCollectionAt(before!.last_fetch_at).getTime());
   await scheduleDueSources();
   const [after] = await sql<{ next_fetch_at: Date }[]>`SELECT next_fetch_at FROM sources WHERE id = ${id}`;
   assert.equal(after!.next_fetch_at.getTime(), before!.next_fetch_at.getTime());
+});
+
+test("fixed slots are stable across boundaries, midnight, year changes and host timezones", () => {
+  for (const [from, to] of [
+    ["2026-10-08T07:29:59+08:00", "2026-10-08T07:30:00+08:00"],
+    ["2026-10-08T07:30:00+08:00", "2026-10-08T19:30:00+08:00"],
+    ["2026-10-08T19:29:59+08:00", "2026-10-08T19:30:00+08:00"],
+    ["2026-10-08T19:30:00+08:00", "2026-10-09T07:30:00+08:00"],
+    ["2026-12-31T23:59:59+08:00", "2027-01-01T07:30:00+08:00"],
+    ["2026-10-08T00:00:00+08:00", "2026-10-08T07:30:00+08:00"],
+  ]) assert.equal(nextCollectionAt(new Date(from)).getTime(), new Date(to).getTime());
+});
+
+test("fixed-time migration aligns existing and paused collectors but preserves external pushes", async () => {
+  const text = readFileSync(new URL("../database/migrations/0046_fixed_collection_times.sql", import.meta.url), "utf8");
+  const rollback = new Error("rollback fixed-time fixtures");
+  await assert.rejects(sql.begin(async (tx) => {
+    const kinds = ["rss", "web_list", "json_list", "x_search", "mp_account", "external"];
+    const pending = new Date("2025-01-01T00:00:00Z");
+    for (const kind of kinds) await tx`INSERT INTO sources (id,name,kind,interval_minutes,next_fetch_at,enabled)
+      VALUES (${`fixed-${kind}-${T}`},${kind},${kind},60,${pending},${kind !== "web_list"})`;
+    await tx.unsafe(text);
+    const [clock] = await tx<{ at: Date }[]>`SELECT now() AS at`;
+    const rows = await tx<{ kind: string; interval_minutes: number; next_fetch_at: Date }[]>`SELECT kind,interval_minutes,next_fetch_at FROM sources WHERE id IN ${tx(kinds.map((kind) => `fixed-${kind}-${T}`))}`;
+    for (const row of rows) {
+      assert.equal(row.interval_minutes, row.kind === "external" ? 60 : 720);
+      assert.equal(row.next_fetch_at.getTime(), row.kind === "external" ? pending.getTime() : nextCollectionAt(clock!.at).getTime());
+    }
+    throw rollback;
+  }), (error) => error === rollback);
+});
+
+test("one fixed slot drains every batch and repeated scheduling does not duplicate sources", async () => {
+  const ids = Array.from({ length: 5 }, (_, i) => `slot-batch-${T}-${i}`);
+  for (const id of ids) await sql`INSERT INTO sources (id,name,kind,next_fetch_at) VALUES (${id},'Slot batch','rss',now()-interval '1 minute')`;
+  const previous = process.env.FETCH_SCHEDULE_BATCH;
+  process.env.FETCH_SCHEDULE_BATCH = "2";
+  try {
+    const result = await scheduleCollectionSlot();
+    assert.ok(result.enqueued >= ids.length);
+    const [count] = await sql<{ n: number }[]>`SELECT count(*)::int AS n FROM pgboss.job WHERE name='sources.fetch' AND data->>'sourceId' IN ${sql(ids)}`;
+    assert.equal(count!.n, ids.length);
+    assert.deepEqual(await scheduleCollectionSlot(), { enqueued: 0, shards: 0 });
+  } finally {
+    if (previous === undefined) delete process.env.FETCH_SCHEDULE_BATCH; else process.env.FETCH_SCHEDULE_BATCH = previous;
+  }
+});
+
+test("公众号 completion delays do not suppress a due fixed slot, or enqueue twice", async () => {
+  const id = `mp-slot-${T}`;
+  const now = new Date();
+  await sql`INSERT INTO sources (id,name,kind,cursor,next_fetch_at) VALUES (${id},'MP slot','mp_account',${sql.json({ lastCheckedAt: new Date(now.getTime()-11*3600_000).toISOString() })},${now})`;
+  const result = await scheduleMpReconcile(now);
+  assert.ok(result.enqueued >= 1);
+  const [row] = await sql<{ next_fetch_at: Date }[]>`SELECT next_fetch_at FROM sources WHERE id=${id}`;
+  assert.equal(row!.next_fetch_at.getTime(), nextCollectionAt(now).getTime());
+  assert.equal((await scheduleMpReconcile(now)).enqueued, 0);
 });
