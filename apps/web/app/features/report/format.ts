@@ -1,3 +1,4 @@
+import { DAILY_REPORT_TIME } from "@rfidhot/industry/reports";
 // Names, dates and grouping for daily, weekly and monthly reports.
 import { SITE } from "@rfidhot/industry/site";
 import type { ReportNavigationEntry, ReportKind } from "@rfidhot/contracts/site";
@@ -126,7 +127,7 @@ export function dateMark(kind: ReportKind, key: string): { figure: string; top: 
 }
 
 /** When each kind comes out (F10), for the masthead. */
-export const EDITION: Record<ReportKind, string> = { daily: "每天 08:00 出刊", weekly: "每周一出刊", monthly: "每月 1 日出刊" };
+export const EDITION: Record<ReportKind, string> = { daily: `每天 ${DAILY_REPORT_TIME} 出刊`, weekly: "每周一出刊", monthly: "每月 1 日出刊" };
 
 /** The masthead's figures, in the order a reader wants them; zero model releases is left out. */
 const METRICS: Array<[key: string, unit: string]> = [

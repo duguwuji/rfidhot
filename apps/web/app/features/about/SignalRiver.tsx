@@ -1,3 +1,4 @@
+import { DAILY_REPORT_TIME } from "@rfidhot/industry/reports";
 // The about page's river. Every line is one of the site's real sources (hover names it). Lines run in
 // from the left, gather into bundles (many reports of one story), meet the 精选 gate that lets a few
 // bundles through, and the ones that pass turn teal and run into a small newspaper: the day's report.
@@ -482,7 +483,7 @@ export function SignalRiver({
       const p = L.paper;
       if (x >= p.x - 8 && x <= p.x + p.w + 8 && y >= p.y - 8 && y <= p.y + p.h + 8) {
         hover = { s: null, bundle: null, paper: true };
-        place(x, y, withSubject("日报"), "每天 08:00 出刊");
+        place(x, y, withSubject("日报"), `每天 ${DAILY_REPORT_TIME} 出刊`);
         redraw();
         return;
       }

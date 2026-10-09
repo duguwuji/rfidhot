@@ -91,17 +91,17 @@ test("a failed collection aligns to the next fixed slot", async () => {
 
 test("fixed slots are stable across boundaries, midnight, year changes and host timezones", () => {
   for (const [from, to] of [
-    ["2026-10-08T07:29:59+08:00", "2026-10-08T07:30:00+08:00"],
-    ["2026-10-08T07:30:00+08:00", "2026-10-08T19:30:00+08:00"],
-    ["2026-10-08T19:29:59+08:00", "2026-10-08T19:30:00+08:00"],
-    ["2026-10-08T19:30:00+08:00", "2026-10-09T07:30:00+08:00"],
-    ["2026-12-31T23:59:59+08:00", "2027-01-01T07:30:00+08:00"],
-    ["2026-10-08T00:00:00+08:00", "2026-10-08T07:30:00+08:00"],
+    ["2026-10-08T06:59:59+08:00", "2026-10-08T07:00:00+08:00"],
+    ["2026-10-08T07:00:00+08:00", "2026-10-08T19:00:00+08:00"],
+    ["2026-10-08T18:59:59+08:00", "2026-10-08T19:00:00+08:00"],
+    ["2026-10-08T19:00:00+08:00", "2026-10-09T07:00:00+08:00"],
+    ["2026-12-31T23:59:59+08:00", "2027-01-01T07:00:00+08:00"],
+    ["2026-10-08T00:00:00+08:00", "2026-10-08T07:00:00+08:00"],
   ]) assert.equal(nextCollectionAt(new Date(from)).getTime(), new Date(to).getTime());
 });
 
 test("fixed-time migration aligns existing and paused collectors but preserves external pushes", async () => {
-  const text = readFileSync(new URL("../database/migrations/0046_fixed_collection_times.sql", import.meta.url), "utf8");
+  const text = readFileSync(new URL("../database/migrations/0047_collection_on_the_hour.sql", import.meta.url), "utf8");
   const rollback = new Error("rollback fixed-time fixtures");
   await assert.rejects(sql.begin(async (tx) => {
     const kinds = ["rss", "web_list", "json_list", "x_search", "mp_account", "external"];

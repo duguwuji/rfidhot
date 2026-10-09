@@ -2,6 +2,8 @@
 // 网页和后端都读它；改完重新构建（docker compose up --build）即可生效。
 // 域名不在这里：部署时用环境变量 SITE_URL 设置。
 
+import { DAILY_REPORT_TIME } from "./reports.ts";
+
 export const SITE = {
   /** 站名：导航、页面标题、分享图、RSS、MCP、后台都用它。 */
   name: "RFID 热点",
@@ -53,7 +55,7 @@ export const ABOUT = {
     collect: "优先关注企业官网、投资者公告和标准组织，行业媒体补充；追踪 RAIN RFID、Ambient IoT 与商品级数据应用。",
     store: "抓到的都存下来，同一件事的报道归到一起；只计入热度的账号也算在内，热点榜就是从这里算出来的。",
     select: "先判断 RFID 相关性，再独立评分两次；优先有参数、部署规模、测试方法和法规依据的消息，压低泛营销。",
-    publish: "每天 08:00（北京时间）出日报，周一出周报，每月 1 日出月报；提供 RSS、公开 API 和 MCP 阅读入口。",
+    publish: `每天 ${DAILY_REPORT_TIME}（北京时间）出日报，周一出周报，每月 1 日出月报；提供 RSS、公开 API 和 MCP 阅读入口。`,
   },
   /**
    * 作者块（选填），null 就不显示。
