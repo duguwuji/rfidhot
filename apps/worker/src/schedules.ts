@@ -1,5 +1,6 @@
 // Cron-style schedules (Asia/Shanghai). Runs are recorded; only jobs marked once catch up missed slots.
 import type { PgBoss } from "pg-boss";
+import { DAILY_REPORT_CRON } from "@rfidhot/industry/reports";
 import { COLLECTION_CRON } from "@rfidhot/industry/collection";
 import { FEATURES } from "@rfidhot/industry/features";
 import { credential } from "@rfidhot/backend/config";
@@ -12,7 +13,7 @@ import { refreshSourceIcons } from "@rfidhot/backend/sources/icons";
 import { computeHotRanking, snapshotHeat } from "@rfidhot/backend/events/hot";
 import { refreshStoryStatuses } from "@rfidhot/backend/events/digest";
 import { linkRelatedStories } from "@rfidhot/backend/events/group";
-import { catchUpReports, composeDaily, composeMonthly, composeWeekly } from "@rfidhot/backend/reports/compose";
+import { catchUpReports, composeScheduledDaily, composeMonthly, composeWeekly } from "@rfidhot/backend/reports/compose";
 import { addDays, beijingDate, isoWeekLabel } from "@rfidhot/contracts/time";
 import { runLeaderboardRound } from "@rfidhot/backend/leaderboard/method/run";
 import { refreshLeaderboard } from "@rfidhot/backend/leaderboard/fetch/refresh";
@@ -45,7 +46,7 @@ export const SCHEDULES: Scheduled[] = [
   { name: "hot.snapshot", cron: "2 * * * *", run: () => snapshotHeat() },
   { name: "stories.status", cron: "7 * * * *", run: refreshStoryStatuses },
   { name: "stories.links", cron: "12 * * * *", run: linkRelatedStories },
-  { name: "reports.daily", cron: "0 8 * * *", missed: "once", run: () => composeDaily(beijingDate(Date.now())) },
+  { name: "reports.daily", cron: DAILY_REPORT_CRON, missed: "once", run: () => composeScheduledDaily() },
   { name: "reports.weekly", cron: "0 10 * * 1", missed: "once", run: () => composeWeekly(isoWeekLabel(addDays(beijingDate(Date.now()), -7))) },
   {
     name: "reports.monthly",

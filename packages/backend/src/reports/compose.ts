@@ -2,6 +2,7 @@
 // missed schedule points are caught up; regeneration creates a revision. The editors' prompts are in
 // the industry pack (industry/prompts/report-*.md), the sections follow its categories.
 import { z } from "zod";
+import { DAILY_REPORT_MINUTES } from "@rfidhot/industry/reports";
 import { SITE } from "@rfidhot/industry/site";
 import { CATEGORIES } from "@rfidhot/industry/taxonomy";
 import { promptText, promptVersion } from "../editorial/prompts.ts";
@@ -133,10 +134,39 @@ async function saveReport(kind: "daily" | "weekly" | "monthly", key: string, sta
   });
 }
 
-/** Daily report for Beijing date D covers [D-1 08:00, D 08:00) Beijing time. */
+/** Latest daily edition whose Beijing cutoff has passed, including before dawn on restart. */
+export function latestDailyReportDate(now = new Date()): string {
+  const today = beijingDate(now);
+  const cutoff = beijingMidnight(today).getTime() + DAILY_REPORT_MINUTES * 60_000;
+  return now.getTime() >= cutoff ? today : addDays(today, -1);
+}
+
+/** Preserve published windows; adjacent editions anchor the first issue after a cutoff change. */
+export async function dailyReportWindow(date: string): Promise<{ start: Date; end: Date }> {
+  const previous = addDays(date, -1);
+  const next = addDays(date, 1);
+  const rows = await sql<{ key: string; window_start: Date; window_end: Date }[]>`
+    SELECT key,window_start,window_end FROM reports WHERE kind='daily' AND key IN ${sql([previous,date,next])}`;
+  const existing = rows.find((r) => r.key === date);
+  if (existing) return { start: existing.window_start, end: existing.window_end };
+  const cutoff = new Date(beijingMidnight(date).getTime() + DAILY_REPORT_MINUTES * 60_000);
+  return {
+    start: rows.find((r) => r.key === previous)?.window_end ?? new Date(cutoff.getTime() - 86400000),
+    end: rows.find((r) => r.key === next)?.window_start ?? cutoff,
+  };
+}
+
+/** Scheduled and missed jobs never create a future edition or regenerate a completed one. */
+export async function composeScheduledDaily(now = new Date()) {
+  const date = latestDailyReportDate(now);
+  const [existing] = await sql`SELECT 1 FROM reports WHERE kind='daily' AND key=${date}`;
+  if (existing) return { key: date, skipped: true };
+  return composeDaily(date);
+}
+
+/** New daily editions normally cover [D-1 07:07, D 07:07) Beijing time. */
 export async function composeDaily(date: string, reason = "scheduled"): Promise<{ key: string; entries: number }> {
-  const end = new Date(beijingMidnight(date).getTime() + 8 * 3600 * 1000);
-  const start = new Date(end.getTime() - 86400000);
+  const { start, end } = await dailyReportWindow(date);
   const covered = await recentlyCovered("daily", date);
   const all = await candidates(start, end);
   const fresh = all.filter((c) => !covered.has(c.factKey) && !covered.has(`a:${c.itemId}`));
@@ -263,7 +293,7 @@ export async function catchUpReports(now = new Date(), days = 7): Promise<{ gene
   const today = beijingDate(now);
   const bjHour = Number(new Date(now.getTime() + 8 * 3600000).toISOString().slice(11, 13));
   const [first] = await sql<{ key: string | null }[]>`SELECT min(key) AS key FROM reports WHERE kind = 'daily'`;
-  const latestDue = bjHour >= 8 ? today : addDays(today, -1);
+  const latestDue = latestDailyReportDate(now);
   for (let i = days - 1; i >= 0; i--) {
     if (shutdownSignal.signal.aborted) return { generated }; // the next hourly run continues
     const d = addDays(latestDue, -i);

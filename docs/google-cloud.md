@@ -44,7 +44,7 @@ sudo docker compose exec -T web node scripts/smoke.ts --base https://你的域�
 
 通过 SSH 编辑 `.env`，填模型地址、名称和 API Key；不要把 Key 放在命令行、
 实例元数据或聊天中。按 [RFID 交接说明](rfid.md) 验证信源、预算、运营资料与条款，
-然后才开启 `COLLECT_ENABLED` 和 `MODEL_CALLS_ENABLED`。采集周期为北京时间每天 07:30 和 19:30 启动采集。
+然后才开启 `COLLECT_ENABLED` 和 `MODEL_CALLS_ENABLED`。采集周期为北京时间每天 07:00 和 19:00 启动采集。
 环境变量修改后运行 `sudo docker compose --profile https up -d`。
 
 更新和数据库备份继续按 [部署文档](deploy.md) 操作；VM 上的检出固定到部署提交，
