@@ -57,7 +57,8 @@ export const SCHEDULES: Scheduled[] = [
       return composeMonthly(m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, "0")}`);
     },
   },
-  { name: "reports.catch-up", cron: "15 * * * *", run: () => catchUpReports() },
+  // Keep recovery separate from the 07:15 daily generation slot.
+  { name: "reports.catch-up", cron: "30 * * * *", run: () => catchUpReports() },
   { name: "ops.retention", cron: "30 3 * * *", missed: "once", run: () => dailyRetention() },
   { name: "sources.icons", cron: "40 4 * * *", missed: "once", run: () => refreshSourceIcons() },
   // IndexNow for new indexable pages (off unless INDEXNOW_SUBMIT_ENABLED).
