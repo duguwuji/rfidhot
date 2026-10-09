@@ -164,7 +164,7 @@ export async function composeScheduledDaily(now = new Date()) {
   return composeDaily(date);
 }
 
-/** New daily editions normally cover [D-1 07:07, D 07:07) Beijing time. */
+/** New daily editions normally cover [D-1 07:15, D 07:15) Beijing time. */
 export async function composeDaily(date: string, reason = "scheduled"): Promise<{ key: string; entries: number }> {
   const { start, end } = await dailyReportWindow(date);
   const covered = await recentlyCovered("daily", date);
