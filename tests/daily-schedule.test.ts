@@ -58,7 +58,11 @@ test("backfilling a hole between historical editions uses both adjacent windows"
   assert.equal(window.end.toISOString(), new Date("2051-01-02T08:00:00+08:00").toISOString());
 });
 
-test("daily generation and hourly recovery use separate cron slots", () => {
+test("scheduled reports and hourly recovery use separate cron slots", () => {
   assert.equal(SCHEDULES.find((s) => s.name === "reports.daily")!.cron, "15 7 * * *");
-  assert.equal(SCHEDULES.find((s) => s.name === "reports.catch-up")!.cron, "30 * * * *");
+  const recovery = SCHEDULES.find((s) => s.name === "reports.catch-up")!.cron;
+  assert.equal(recovery, "45 * * * *");
+  for (const name of ["reports.daily", "reports.weekly", "reports.monthly"]) {
+    assert.notEqual(SCHEDULES.find((s) => s.name === name)!.cron.split(" ")[0], recovery.split(" ")[0]);
+  }
 });
