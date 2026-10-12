@@ -1,0 +1,313 @@
+{
+  "asOf": "2026-10-09",
+  "method": "Local Node.js read-only guardedFetch + fromHtml/fetchRss + readable; no collectSource, operational DB, model, paid collector or publishing calls.",
+  "files": {
+    "industry/sources.json": "a5f9b44746bd7bfa1e2c7aba0ec5374ed86d7bbd759103cc1a365a7c0a0bc2fe",
+    "industry/selection.ts": "f9590f332c137f060463dc580a1354986b86a7513308a08250092948302b7428",
+    "industry/prompts/prefilter.md": "c3062c7ecf70620c566a634d024efa7c2d23b1aa77876327e36c35ecb70a6a4c",
+    "industry/prompts/selection-score.md": "21b7999d17a4ba058b6b9ec61e8cffdd0066643a4105d0d4b0837069623d7907",
+    "scripts/eval-selection.ts": "bb0eb9b42d81dbe40b57a7406376c98017ce5e2c868a6ac6d792e4f93f676b1f"
+  },
+  "sources": [
+    {
+      "sourceId": "web-impinj-blog",
+      "url": "https://www.impinj.com/library/blog",
+      "fetchedAt": "2026-10-09T03:08:49.521Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.impinj.com/library/blog",
+      "error": null,
+      "rawCandidateCount": 24,
+      "urlAndCategoryEligibleCount": 24
+    },
+    {
+      "sourceId": "web-wiliot-blog",
+      "url": "https://www.wiliot.com/blog",
+      "fetchedAt": "2026-10-09T03:08:49.521Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.wiliot.com/blog",
+      "error": null,
+      "rawCandidateCount": 247,
+      "urlAndCategoryEligibleCount": 247
+    },
+    {
+      "sourceId": "web-impinj-news",
+      "url": "https://www.impinj.com/about-us/news-room/2026",
+      "fetchedAt": "2026-10-09T03:08:49.514Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.impinj.com/about-us/news-room/2026",
+      "error": null,
+      "rawCandidateCount": 13,
+      "urlAndCategoryEligibleCount": 13
+    },
+    {
+      "sourceId": "web-avery-rfid",
+      "url": "https://rfid.averydennison.com/en/home/news-insights/press-releases.html",
+      "fetchedAt": "2026-10-09T03:08:49.521Z",
+      "httpStatus": 200,
+      "responseUrl": "https://rfid.averydennison.com/en/home/news-insights/press-releases.html",
+      "error": null,
+      "rawCandidateCount": 67,
+      "urlAndCategoryEligibleCount": 67
+    },
+    {
+      "sourceId": "web-tageos-news",
+      "url": "https://www.tageos.com/en/news.html",
+      "fetchedAt": "2026-10-09T03:08:49.521Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.tageos.com/en/news.html",
+      "error": null,
+      "rawCandidateCount": 12,
+      "urlAndCategoryEligibleCount": 12
+    },
+    {
+      "sourceId": "web-nxp-news",
+      "url": "https://www.nxp.com/press-releases",
+      "fetchedAt": "2026-10-09T03:08:51.980Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.nxp.com/company/about-nxp/newsroom:NEWSROOM?collection=Media&start=0&max=12&language=en&query=typeNews%3E%3EPress%20Release",
+      "error": null,
+      "rawCandidateCount": 6,
+      "urlAndCategoryEligibleCount": 6
+    },
+    {
+      "sourceId": "web-identiv-press",
+      "url": "https://identiv.com/press-releases/",
+      "fetchedAt": "2026-10-09T03:08:51.980Z",
+      "httpStatus": 200,
+      "responseUrl": "https://identiv.com/press-releases/",
+      "error": null,
+      "rawCandidateCount": 13,
+      "urlAndCategoryEligibleCount": 13
+    },
+    {
+      "sourceId": "web-voyantic-blog",
+      "url": "https://voyantic.com/blog/",
+      "fetchedAt": "2026-10-09T03:08:51.980Z",
+      "httpStatus": 200,
+      "responseUrl": "https://voyantic.com/insights/blog/",
+      "error": null,
+      "rawCandidateCount": 12,
+      "urlAndCategoryEligibleCount": 12
+    },
+    {
+      "sourceId": "web-rain-blog",
+      "url": "https://therainalliance.org/blog/",
+      "fetchedAt": "2026-10-09T03:08:51.980Z",
+      "httpStatus": 200,
+      "responseUrl": "https://therainalliance.org/blog/",
+      "error": null,
+      "rawCandidateCount": 9,
+      "urlAndCategoryEligibleCount": 9
+    },
+    {
+      "sourceId": "web-rain-member-news",
+      "url": "https://therainalliance.org/member-news/",
+      "fetchedAt": "2026-10-09T03:08:51.980Z",
+      "httpStatus": 200,
+      "responseUrl": "https://therainalliance.org/member-news/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "web-nfc-forum-news",
+      "url": "https://nfc-forum.org/news/",
+      "fetchedAt": "2026-10-09T03:08:55.196Z",
+      "httpStatus": 200,
+      "responseUrl": "https://nfc-forum.org/news/",
+      "error": null,
+      "rawCandidateCount": 1,
+      "urlAndCategoryEligibleCount": 1
+    },
+    {
+      "sourceId": "rss-checkpoint-news",
+      "url": "https://checkpointsystems.com/feed/",
+      "fetchedAt": "2026-10-09T03:08:55.197Z",
+      "httpStatus": 200,
+      "responseUrl": "https://checkpointsystems.com/feed/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "web-zebra-press",
+      "url": "https://www.zebra.com/us/en/about-zebra/newsroom/press-releases.html",
+      "fetchedAt": "2026-10-09T03:08:55.196Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.zebra.com/us/en/about-zebra/newsroom/press-releases.html",
+      "error": null,
+      "rawCandidateCount": 528,
+      "urlAndCategoryEligibleCount": 528
+    },
+    {
+      "sourceId": "rss-feig-news",
+      "url": "https://www.feig.de/en/news-en/feed/",
+      "fetchedAt": "2026-10-09T03:08:55.196Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.feig.de/en/news-en/feed/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "web-rfid-journal",
+      "url": "https://www.rfidjournal.com/news/",
+      "fetchedAt": "2026-10-09T03:08:55.196Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.rfidjournal.com/news/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "web-rfid-world-news",
+      "url": "https://www.rfidworld.com.cn/news/index.html",
+      "fetchedAt": "2026-10-09T03:08:58.150Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.rfidworld.com.cn/news/index.html",
+      "error": null,
+      "rawCandidateCount": 30,
+      "urlAndCategoryEligibleCount": 30
+    },
+    {
+      "sourceId": "rss-aim-news",
+      "url": "https://www.aimglobal.org/feed/",
+      "fetchedAt": "2026-10-09T03:08:58.150Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.aimglobal.org/feed/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "rss-ieee-rfid-news",
+      "url": "https://www.ieee-rfid.org/feed/",
+      "fetchedAt": "2026-10-09T03:08:58.150Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.ieee-rfid.org/feed/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 6
+    },
+    {
+      "sourceId": "web-ec-dpp",
+      "url": "https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en",
+      "fetchedAt": "2026-10-09T03:08:58.150Z",
+      "httpStatus": 200,
+      "responseUrl": "https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en",
+      "error": null,
+      "rawCandidateCount": 4,
+      "urlAndCategoryEligibleCount": 4
+    },
+    {
+      "sourceId": "web-think-wiot-news",
+      "url": "https://wiot-group.com/think/en/",
+      "fetchedAt": "2026-10-09T03:08:58.150Z",
+      "httpStatus": 200,
+      "responseUrl": "https://wiot-group.com/think/en/",
+      "error": null,
+      "rawCandidateCount": 20,
+      "urlAndCategoryEligibleCount": 20
+    },
+    {
+      "sourceId": "web-gs1-us-press",
+      "url": "https://www.gs1us.org/industries-and-insights/media-center/press-releases",
+      "fetchedAt": "2026-10-09T03:09:01.226Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.gs1us.org/industries-and-insights/media-center/press-releases",
+      "error": null,
+      "rawCandidateCount": 77,
+      "urlAndCategoryEligibleCount": 77
+    },
+    {
+      "sourceId": "web-kezzler-insights",
+      "url": "https://kezzler.com/learn/",
+      "fetchedAt": "2026-10-09T03:09:01.225Z",
+      "httpStatus": 200,
+      "responseUrl": "https://kezzler.com/learn/",
+      "error": null,
+      "rawCandidateCount": 13,
+      "urlAndCategoryEligibleCount": 13
+    },
+    {
+      "sourceId": "web-gs1-europe-news",
+      "url": "https://gs1.eu/news/",
+      "fetchedAt": "2026-10-09T03:09:01.225Z",
+      "httpStatus": 200,
+      "responseUrl": "https://gs1.eu/news/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "web-cirpass2-news",
+      "url": "https://cirpass2.eu/latest-news/",
+      "fetchedAt": "2026-10-09T03:09:01.225Z",
+      "httpStatus": 200,
+      "responseUrl": "https://cirpass2.eu/latest-news/",
+      "error": null,
+      "rawCandidateCount": 6,
+      "urlAndCategoryEligibleCount": 6
+    },
+    {
+      "sourceId": "rss-batterypass-news",
+      "url": "https://thebatterypass.eu/feed/",
+      "fetchedAt": "2026-10-09T03:09:01.225Z",
+      "httpStatus": 200,
+      "responseUrl": "https://thebatterypass.eu/feed/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "rss-hana-blog",
+      "url": "https://hanarfid.com/feed/",
+      "fetchedAt": "2026-10-09T03:09:05.460Z",
+      "httpStatus": 200,
+      "responseUrl": "https://hanarfid.com/feed/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 4
+    },
+    {
+      "sourceId": "rss-schreiner-rfid",
+      "url": "https://forum.schreiner-group.com/en/tag/rfid-nfc-en/feed/",
+      "fetchedAt": "2026-10-09T03:09:05.461Z",
+      "httpStatus": 200,
+      "responseUrl": "https://forum.schreiner-group.com/en/tag/rfid-nfc-en/feed/",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "web-openepcis-blog",
+      "url": "https://openepcis.io/blog/",
+      "fetchedAt": "2026-10-09T03:09:05.460Z",
+      "httpStatus": 200,
+      "responseUrl": "https://openepcis.io/blog/",
+      "error": null,
+      "rawCandidateCount": 3,
+      "urlAndCategoryEligibleCount": 3
+    },
+    {
+      "sourceId": "web-arizon",
+      "url": "https://www.arizonrfid.com/blog",
+      "fetchedAt": "2026-10-09T03:09:05.461Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.arizonrfid.com/blog",
+      "error": null,
+      "rawCandidateCount": 10,
+      "urlAndCategoryEligibleCount": 10
+    },
+    {
+      "sourceId": "web-mmh-news",
+      "url": "https://www.mmh.com/",
+      "fetchedAt": "2026-10-09T03:09:05.461Z",
+      "httpStatus": 200,
+      "responseUrl": "https://www.mmh.com/",
+      "error": null,
+      "rawCandidateCount": 15,
+      "urlAndCategoryEligibleCount": 15
+    }
+  ]
+}
