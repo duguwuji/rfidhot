@@ -1114,6 +1114,182 @@
       "site_fulltext": false,
       "syndicate_fulltext": false,
       "enabled": true
+    },
+    {
+      "id": "web-chainway-news",
+      "name": "Chainway 官方新闻",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.chainway.net/News?type_id=71",
+        "itemSelector": "div.item:has(span.date)",
+        "linkSelector": "a",
+        "titleSelector": "div.text_wrap h3, div.text_wrap .title, div.text_wrap p",
+        "publishedAtSelector": "span.date",
+        "publishedAtUtcOffset": "+08:00",
+        "allowUrlPrefixes": [
+          "https://www.chainway.net/News/Info/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "summarySelector": "meta[name=\"description\"]"
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": "chainway",
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-xminnov-news",
+      "name": "英诺尔 RFID 企业动态",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.xminnov.com/Ne2_index_gci_233.html",
+        "itemSelector": "a:has(div.writtenwr)",
+        "titleSelector": "h3",
+        "publishedAtSelector": "time",
+        "publishedAtUtcOffset": "+08:00",
+        "allowUrlPrefixes": [
+          "https://www.xminnov.com/Ne2_d_gci_233_id_"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "detail": {
+          "maxFetches": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-aimchina-news",
+      "name": "中国自动识别技术协会资讯",
+      "kind": "web_list",
+      "config": {
+        "url": "http://www.aimchina.org.cn/index/news/lists/id/9/pid/1.html",
+        "itemSelector": "li.newsColumn",
+        "linkSelector": "a.newsTitleText",
+        "titleSelector": "a.newsTitleText",
+        "allowUrlPrefixes": [
+          "http://www.aimchina.org.cn/index/news/detail/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "title",
+          "publishedAtRegex": "发布时间：\\s*(20\\d{2}-\\d{2}-\\d{2})",
+          "publishedAtUtcOffset": "+08:00",
+          "publishedAtAuthoritative": true
+        }
+      },
+      "tier": "T1_5",
+      "first_party": false,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "机构"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-hopeland-news",
+      "name": "Hopeland 鸿陆官方资讯",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.hopelandrfid.com/article.html",
+        "itemSelector": "a.each-item, div.news-top > a",
+        "titleSelector": ".title, h3, .tit, .l1",
+        "publishedAtSelector": ".time, .l2",
+        "publishedAtUtcOffset": "+08:00",
+        "allowUrlPrefixes": [
+          "https://www.hopelandrfid.com/article/"
+        ],
+        "denyUrlPrefixes": [
+          "https://www.hopelandrfid.com/article/list-"
+        ],
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "detail": {
+          "maxFetches": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": "hopeland",
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-fmsh-news",
+      "name": "复旦微电子新闻",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.fmsh.com/news/",
+        "itemSelector": "div.in_r li, div.news_top p.tit",
+        "linkSelector": "a",
+        "titleSelector": "a",
+        "publishedAtSelector": "span",
+        "publishedAtUtcOffset": "+08:00",
+        "allowUrlPrefixes": [
+          "https://www.fmsh.com/f4debf45-f44a-a17d-dcad-8e82db4cc6f4/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        },
+        "detail": {
+          "maxFetches": 8
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "owner_entity_id": "fudan",
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": false
     }
   ]
 }
