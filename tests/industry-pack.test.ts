@@ -98,3 +98,28 @@ test("MMH uses exact article dates regardless of attribute order and ignores nav
     ["RFID deployment second", "2026-10-02T14:02:00.000Z"],
   ]);
 });
+
+test("Chainway news cards keep the headline and listed date", () => {
+  const s = source("web-chainway-news");
+  const rows = fromHtml('<div class="item"><a href="/News/Info/561"><div class="text_wrap"><h3>Chainway Launches C5E UHF RFID Reader</h3><span class="date">2026-09-23</span></div></a></div><div class="item"><a href="/About">About</a></div>', s.config.url, s);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]!.title, "Chainway Launches C5E UHF RFID Reader");
+  assert.equal(rows[0]!.publishedAt?.toISOString().slice(0, 10), "2026-09-23");
+});
+
+test("Xminnov (英诺尔) news keeps the Chinese headline and time element date", () => {
+  const s = source("web-xminnov-news");
+  const rows = fromHtml('<a href="/Ne2_d_gci_233_id_132.html"><div class="writtenwr clearfix"><div class="writtenle"><time>2026-08-24</time></div><div class="writtenfix"><h3>告别“找货难”！英诺尔让仓储寻货迈入“秒级时代”</h3></div></div></a><a href="/Job_index_gci_199.html">招聘</a>', s.config.url, s);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]!.title, "告别“找货难”！英诺尔让仓储寻货迈入“秒级时代”");
+  assert.equal(rows[0]!.publishedAt?.toISOString().slice(0, 10), "2026-08-24");
+});
+
+test("AIM China list takes the article title and leaves the date to the detail page", () => {
+  const s = source("web-aimchina-news");
+  const rows = fromHtml('<ul><li class="newsColumn"><a class="newsTitleText" href="/index/news/detail/detail_id/11622/id/9/pid/1.html">中国自动识别技术协会第五届理事会扩大会于福州举办</a><div class="newsContentText">2026年9月22日，会议在福州举办</div></li></ul>', s.config.url, s);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]!.title, "中国自动识别技术协会第五届理事会扩大会于福州举办");
+  assert.equal(rows[0]!.publishedAt, null);
+  assert.ok(new RegExp(s.config.detail.publishedAtRegex).exec("<p class=\"newsVideoContentText\">发布时间：2026-09-23</p>"));
+});

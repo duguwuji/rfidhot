@@ -1,4 +1,4 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": ["migrate.ts", "repair-impinj-dates.ts", "check-media-runtime.ts"]
+  "include": ["migrate.ts", "repair-impinj-dates.ts", "check-media-runtime.ts", "revoke-unlicensed-fulltext.ts"]
 }
