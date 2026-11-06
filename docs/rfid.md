@@ -138,3 +138,7 @@ Avery Dennison 列表的旧公告还使用短横线、逗号、不换行空格�
 4. `gold.example.jsonl` 与 `relation-gold.example.jsonl` 全部是虚构格式示例，不能充当运营者标注集或效果证据。
 
 品牌图标使用独立 R 字形与射频弧线，日报/周报/月报报头已重新生成。字体许可见 `industry/brand/FONT-NOTICE.md`。模型榜与 Codex 重置监控关闭，其导航和公开接口不再提供。
+
+## 2026-11-06 RFID News
+
+新增 [RFID News](https://www.rfidnews.co.uk/) 英国 RFID 行业媒体 RSS，覆盖产品、应用案例和行业动态。按 T2 媒体参与精选，首次回填最多 8 篇、最多追溯 12 个月，每天北京时间 07:00 和 19:00 采集。网站和 RSS 全文均关闭，展示摘要并链接原文；实际抓取效果以部署环境验证为准。
