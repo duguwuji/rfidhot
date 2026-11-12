@@ -12,10 +12,10 @@
     "@rfidhot/industry": "*",
     "@modelcontextprotocol/server": "2.3.1",
     "@resvg/resvg-js": "2.6.2",
-    "fastify": "5.12.5",
+    "fastify": "5.12.8",
     "satori": "0.33.5",
     "sharp": "0.35.5",
     "uqr": "0.1.3",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   }
 }
