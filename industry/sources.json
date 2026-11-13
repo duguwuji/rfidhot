@@ -678,6 +678,27 @@
       "enabled": true
     },
     {
+      "id": "rss-rfid-news-uk",
+      "name": "RFID News 行业资讯",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.rfidnews.co.uk/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 12
+        }
+      },
+      "tier": "T2",
+      "first_party": false,
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": ["行业媒体"],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
       "id": "web-rfid-world-news",
       "name": "RFID 世界网资讯",
       "kind": "web_list",
